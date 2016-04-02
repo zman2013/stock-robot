@@ -17,7 +17,7 @@
       <property name="forceBigDecimals" value="false" />
     </javaTypeResolver>
 
-    <javaModelGenerator targetPackage="com.zman.data.domain" targetProject="src/main/java">
+    <javaModelGenerator targetPackage="com.zman.stock.data.domain" targetProject="src/main/java">
       <property name="enableSubPackages" value="true" />
       <property name="trimStrings" value="true" />
     </javaModelGenerator>
@@ -26,7 +26,7 @@
       <property name="enableSubPackages" value="true" />
     </sqlMapGenerator>
 
-    <javaClientGenerator type="XMLMAPPER" targetPackage="com.zman.data.dao"  targetProject="src/main/java">
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.zman.stock.data.dao"  targetProject="src/main/java">
       <property name="enableSubPackages" value="true" />
     </javaClientGenerator>
 
