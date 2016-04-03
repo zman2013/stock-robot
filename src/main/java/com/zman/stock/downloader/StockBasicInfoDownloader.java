@@ -1,9 +1,9 @@
 package com.zman.stock.downloader;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zman.stock.Constants;
+import com.zman.stock.data.domain.Stock;
+import com.zman.stock.service.domain.StockWrapper;
 
 /**
  * 下载所有股票的编号和名称
@@ -26,25 +26,25 @@ public class StockBasicInfoDownloader {
     private static final Logger logger = LoggerFactory
             .getLogger(StockBasicInfoDownloader.class);
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    public void download() throws IOException {
+    public List<Stock> download() throws IOException {
+        List<Stock> stockList = new LinkedList<>();
 
         String baseUrl = "http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/%d/ajax/1/";
         // 抓取首页信息
-        Map<String, Map<String, String>> map = findFirstPage(String.format(
-                baseUrl, 1));
-        int stockCount = Integer.parseInt(map.get("count").get("count"));
-        map.remove("count");
+        StockWrapper stockWrapper = findFirstPage(String.format(baseUrl, 1));
+        stockList.addAll(stockWrapper.stockList);
         // 获得后面页面的股票数据
-        for (int i = 2; i <= stockCount; i++) {
-            Map<String, Map<String, String>> tmp = findOtherPage(String.format(
-                    baseUrl, i));
-            map.putAll(tmp);
+        for (int i = 2; i <= stockWrapper.pageCount; i++) {
+            try {
+                List<Stock> tmp = findOtherPage(String.format(baseUrl, i));
+                stockList.addAll(tmp);
+            } catch (Exception e) {
+                logger.error("下载第{}页面时出错", i);
+                logger.error("", e);
+            }
         }
-        // 输出到文件
-        mapper.writeValue(new File(Constants.allStockPath), map);
-
+        // 返回
+        return stockList;
     }
 
     /**
@@ -54,20 +54,29 @@ public class StockBasicInfoDownloader {
      * @return 第一项为页面总数，后面的为股票1编码，股票1名称，股票2编码，股票2名称。。。
      * @throws IOException
      */
-    private Map<String, Map<String, String>> findFirstPage(String url)
-            throws IOException {
-        Map<String, Map<String, String>> map = new HashMap<>();
+    private StockWrapper findFirstPage(String url) throws IOException {
 
+        StockWrapper stockWrapper = new StockWrapper();
         // 抓取页面
-        Document doc = Jsoup.connect(url).get();
-
+        Document doc = null;
+        // 如果失败，重试三次
+        int i = 0;
+        while (i < 3) {
+            try {
+                doc = Jsoup.connect(url).get();
+                break;
+            } catch (Exception e) {
+                i++;
+                if (i >= 3) {
+                    throw e;
+                }
+            }
+        }
         // 获得页面数量
         String pageInfo = doc.select("span.page_info").text();
         String pageCount = pageInfo.split("/")[1];
         logger.debug("pageCount: {}", pageCount);
-        Map<String, String> countMap = new HashMap<>();
-        countMap.put("count", pageCount);
-        map.put("count", countMap);
+        stockWrapper.pageCount = Integer.parseInt(pageCount);
 
         // 获得股票信息
         Elements trs = doc.select("tbody tr");
@@ -76,22 +85,36 @@ public class StockBasicInfoDownloader {
             String code = tds.get(1).text();
             String name = tds.get(2).text();
             String price = tds.get(3).text();
-            Map<String, String> tmp = new HashMap<>();
-            tmp.put("name", name);
-            tmp.put("price", price);
-            map.put(code, tmp);
+            Stock stock = new Stock();
+            stock.setCode(code);
+            stock.setName(name);
+            stock.setPrice(new BigDecimal(price));
+            stockWrapper.stockList.add(stock);
             logger.debug("{}:{}:{}", code, name, price);
         });
 
-        return map;
+        logger.info("下载首页完成->页面数:{},股票数:{}", stockWrapper.pageCount,
+                stockWrapper.stockList.size());
+        return stockWrapper;
     }
 
-    private Map<String, Map<String, String>> findOtherPage(String url)
-            throws IOException {
-        Map<String, Map<String, String>> map = new HashMap<>();
-
+    private List<Stock> findOtherPage(String url) throws IOException {
+        List<Stock> stockList = new LinkedList<>();
         // 抓取页面
-        Document doc = Jsoup.connect(url).get();
+        Document doc = null;
+        // 如果失败，重试三次
+        int i = 0;
+        while (i < 3) {
+            try {
+                doc = Jsoup.connect(url).get();
+                break;
+            } catch (Exception e) {
+                i++;
+                if (i >= 3) {
+                    throw e;
+                }
+            }
+        }
 
         // 获得股票信息
         Elements trs = doc.select("tbody tr");
@@ -100,13 +123,15 @@ public class StockBasicInfoDownloader {
             String code = tds.get(1).text();
             String name = tds.get(2).text();
             String price = tds.get(3).text();
-            Map<String, String> tmp = new HashMap<>();
-            tmp.put("name", name);
-            tmp.put("price", price);
-            map.put(code, tmp);
+            Stock stock = new Stock();
+            stock.setName(name);
+            stock.setCode(code);
+            stock.setPrice(new BigDecimal(price));
+            stockList.add(stock);
             logger.debug("{}:{}:{}", code, name, price);
         });
 
-        return map;
+        logger.info("下载页面->股票数量:{}", stockList.size());
+        return stockList;
     }
 }

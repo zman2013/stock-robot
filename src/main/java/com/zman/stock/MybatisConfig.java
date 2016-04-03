@@ -16,12 +16,12 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 @Configuration
 @MapperScan("com.zman.stock.data.dao")
 public class MybatisConfig {
-    
-    @Value("stock.db.url")
+
+    @Value("${stock.db.url}")
     private String stockDBUrl;
-    @Value("stock.db.username")
+    @Value("${stock.db.username}")
     private String stockDBUsername;
-    @Value("stock.db.password")
+    @Value("${stock.db.password}")
     private String stockDBPassword;
 
     @Autowired

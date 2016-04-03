@@ -6,19 +6,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.zman.stock.data.dao.StockMapper;
-import com.zman.stock.data.domain.Stock;
-import com.zman.stock.downloader.StockBasicInfoDownloader;
+import com.zman.stock.service.StockBasicInfoService;
 
 @SpringBootApplication
 @EnableScheduling
 public class Application implements CommandLineRunner {
 
     @Autowired
-    private StockBasicInfoDownloader basicInfoDownloader;
-
-    @Autowired
-    private StockMapper stockMapper;
+    private StockBasicInfoService stockBasicInfoService;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class);
@@ -26,12 +21,7 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... arg0) throws Exception {
-        Stock stock = new Stock();
-        stock.setCode("000847");
-        stock.setName("asdf");
-        stock.setCount(100);
-        stock.setMainBusiness("asdf");
-        System.out.println(stockMapper.insert(stock));
+        stockBasicInfoService.run();
     }
 
 }
