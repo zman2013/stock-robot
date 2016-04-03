@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,13 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 @Configuration
 @MapperScan("com.zman.stock.data.dao")
 public class MybatisConfig {
+    
+    @Value("stock.db.url")
+    private String stockDBUrl;
+    @Value("stock.db.username")
+    private String stockDBUsername;
+    @Value("stock.db.password")
+    private String stockDBPassword;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -23,9 +31,9 @@ public class MybatisConfig {
     public DataSource getDataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://123.57.144.1:3306/stock");
-        dataSource.setUsername("stock");
-        dataSource.setPassword("stock");
+        dataSource.setUrl(stockDBUrl);
+        dataSource.setUsername(stockDBUsername);
+        dataSource.setPassword(stockDBPassword);
         return dataSource;
     }
 
