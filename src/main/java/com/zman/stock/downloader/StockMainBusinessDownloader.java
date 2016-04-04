@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
+import org.jsoup.HttpStatusException;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -17,21 +17,20 @@ import org.springframework.stereotype.Service;
 
 import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.service.domain.DownloadFailException;
-import com.zman.stock.util.DownloadUtil;
 
 /**
- * 股票股数下载，股数单位是：万股
+ * 公司的主营业务下载，存入股票的基本信息中
  * 
  * @author zman
  *
  */
 @Service
-public class StockCountDownloader extends AbstractLoopAllStockDownloader {
+public class StockMainBusinessDownloader extends AbstractLoopAllStockDownloader {
 
     private final static Logger logger = LoggerFactory
-            .getLogger(StockCountDownloader.class);
+            .getLogger(StockMainBusinessDownloader.class);
 
-    @Value("${stock.count.url}")
+    @Value("${stock.main.business.url}")
     private String baseUrl;
 
     @Override
@@ -47,11 +46,9 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
             try {
                 // 下载页面,并处理
                 Map<String, Object> result = process(code);
-                SortedMap<String, Object> tmp = new TreeMap<>(result);
                 // 保存信息
-                long count = (long) (Double.parseDouble((String) result.get(tmp
-                        .lastKey())) * 10000);
-                stock.getValue().count = count;
+                String mainBusinessInfo = (String) result.get(code);
+                stock.getValue().mainBusiness = mainBusinessInfo;
             } catch (Exception e) {
                 logger.error("", e);
             }
@@ -81,21 +78,33 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
      * @param baseUrl
      * @param code
      * @param name
-     * @return date -> count, 例: 2015-12-31 -> 10000
+     * @return code -> mainBusiness, 例: 000848 -> 露露产品
      * @throws DownloadFailException
+     * @throws IOException
      */
     @Override
     protected Map<String, Object> process(String code)
-            throws DownloadFailException {
-        Document doc = DownloadUtil.downloadDoc(String.format(baseUrl, code));
-        Elements elements = doc.select("#astockchange_table tbody tr");
-        Map<String, Object> map = new HashMap<>();
-        elements.stream().forEach(tr -> {
-            Elements eles = tr.select("td");
-            String date = eles.get(0).text(); // 2015-12-31
-                String count = eles.get(2).text();
-                map.put(date, count);
-            });
-        return map;
+            throws DownloadFailException, IOException {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Document doc = Jsoup.connect(String.format(baseUrl, "sz" + code))
+                    .get();
+            Elements eles = doc.select("div.com_overview p:eq(3)");
+            String mainBusiness = eles.text();
+            result.put(code, mainBusiness);
+            return result;
+        } catch (HttpStatusException e) {
+        }
+
+        try {
+            Document doc = Jsoup.connect(String.format(baseUrl, "sh" + code))
+                    .get();
+            Elements eles = doc.select("div.com_overview p:eq(3)");
+            String mainBusiness = eles.text();
+            result.put(code, mainBusiness);
+        } catch (HttpStatusException e) {
+        }
+
+        return result;
     }
 }

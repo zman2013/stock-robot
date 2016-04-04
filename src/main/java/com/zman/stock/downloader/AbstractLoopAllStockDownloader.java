@@ -1,6 +1,7 @@
 package com.zman.stock.downloader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,7 +95,8 @@ public abstract class AbstractLoopAllStockDownloader {
      * @param name
      * @return
      * @throws DownloadFailException
+     * @throws IOException
      */
     protected abstract Map<String, Object> process(String code)
-            throws DownloadFailException;
+            throws DownloadFailException, IOException;
 }
