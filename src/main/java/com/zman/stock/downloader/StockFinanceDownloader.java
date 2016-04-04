@@ -9,7 +9,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.zman.stock.service.domain.DownloadFailException;
+import com.zman.stock.exception.DownloadFailException;
 import com.zman.stock.util.DownloadUtil;
 
 /**

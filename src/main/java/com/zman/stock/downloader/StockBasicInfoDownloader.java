@@ -1,5 +1,6 @@
 package com.zman.stock.downloader;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,8 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.StockBasicInfo;
-import com.zman.stock.service.domain.DownloadFailException;
+import com.zman.stock.exception.DownloadFailException;
 import com.zman.stock.util.DownloadUtil;
 
 /**
@@ -29,7 +31,12 @@ public class StockBasicInfoDownloader {
     @Value("${stock.basic.info.url")
     private String baseUrl;
 
-    public Map<String, StockBasicInfo> download() throws IOException {
+    @Value("${stock.basic.info.file}")
+    private String filePath;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    public void download() throws IOException {
         Map<String, StockBasicInfo> result = new HashMap<>();
 
         // 抓取首页信息
@@ -49,8 +56,8 @@ public class StockBasicInfoDownloader {
                 logger.error("", e);
             }
         }
-        // 返回
-        return result;
+        // 保存
+        objectMapper.writeValue(new File(filePath), result);
     }
 
     /**

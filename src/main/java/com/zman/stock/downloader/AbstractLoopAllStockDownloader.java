@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.StockBasicInfo;
-import com.zman.stock.service.domain.DownloadFailException;
+import com.zman.stock.exception.DownloadFailException;
 
 /**
  * 遍历所有股票，进行下载

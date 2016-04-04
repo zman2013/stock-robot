@@ -3,7 +3,7 @@ package com.zman.stock.util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import com.zman.stock.service.domain.DownloadFailException;
+import com.zman.stock.exception.DownloadFailException;
 
 public class DownloadUtil {
 

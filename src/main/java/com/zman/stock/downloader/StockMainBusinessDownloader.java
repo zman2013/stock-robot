@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.zman.stock.data.domain.StockBasicInfo;
-import com.zman.stock.service.domain.DownloadFailException;
+import com.zman.stock.exception.DownloadFailException;
 
 /**
  * 公司的主营业务下载，存入股票的基本信息中

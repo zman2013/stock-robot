@@ -1,4 +1,4 @@
-package com.zman.stock.service.domain;
+package com.zman.stock.exception;
 
 /**
  * 下载页面失败

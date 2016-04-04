@@ -6,17 +6,17 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.zman.stock.downloader.StockBasicInfoDownloader;
 import com.zman.stock.downloader.StockCountDownloader;
 import com.zman.stock.downloader.StockFinanceDownloader;
 import com.zman.stock.downloader.StockMainBusinessDownloader;
-import com.zman.stock.service.StockBasicInfoService;
 
 @SpringBootApplication
 @EnableScheduling
 public class Application implements CommandLineRunner {
 
     @Autowired
-    private StockBasicInfoService stockBasicInfoService;
+    private StockBasicInfoDownloader stockBasicInfoDownloader;
     @Autowired
     private StockCountDownloader stockCountDownloader;
     @Autowired
