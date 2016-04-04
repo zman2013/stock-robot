@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.zman.stock.data.domain.StockBasicInfo;
@@ -25,10 +26,12 @@ public class StockBasicInfoDownloader {
     private static final Logger logger = LoggerFactory
             .getLogger(StockBasicInfoDownloader.class);
 
+    @Value("${stock.basic.info.url")
+    private String baseUrl;
+
     public Map<String, StockBasicInfo> download() throws IOException {
         Map<String, StockBasicInfo> result = new HashMap<>();
 
-        String baseUrl = "http://data.10jqka.com.cn/funds/ggzjl/field/zdf/order/desc/page/%d/ajax/1/";
         // 抓取首页信息
         int pageCount = 0;
         try {
