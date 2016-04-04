@@ -33,7 +33,7 @@ public class StockBasicInfoServiceImpl implements StockBasicInfoService {
             List<Stock> stockList = basicInfoDownloader.download();
             logger.info("股票基本信息下载完毕,用时:{}", System.currentTimeMillis() - time);
 
-            logger.info("开始将股票基本信息存入数据库 ...");
+            logger.info("开始将股票基本信息存入数据库...");
             time = System.currentTimeMillis();
             stockList.forEach(stock -> {
                 Stock tmp = stockMapper.selectByPrimaryKey(stock.getCode());
