@@ -91,13 +91,13 @@ public class StockBasicInfoDownloader {
         Elements trs = doc.select("tbody tr");
         trs.stream().forEach(tr -> {
             Elements tds = tr.select("td");
-            String code = tds.get(1).text();
-            String name = tds.get(2).text();
+
             StockBasicInfo stock = new StockBasicInfo();
-            stock.code = code;
-            stock.name = name;
-            result.put(code, stock);
-            logger.debug("{}:{}", code, name);
+            stock.code = tds.get(1).text();
+            stock.name = tds.get(2).text();
+            stock.price = tds.get(3).text();
+            result.put(stock.code, stock);
+            logger.debug("{}:{}:{}", stock.code, stock.name, stock.price);
         });
 
         logger.info("下载页面->股票数量:{}", result.size());

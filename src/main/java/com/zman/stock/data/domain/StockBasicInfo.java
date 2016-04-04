@@ -13,4 +13,7 @@ public class StockBasicInfo {
 
     /* 主营业务 */
     public String mainBusiness;
+
+    /** 价格 */
+    public String price;
 }

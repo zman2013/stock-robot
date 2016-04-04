@@ -6,9 +6,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.zman.stock.downloader.StockBasicFinanceDownloader;
 import com.zman.stock.downloader.StockBasicInfoDownloader;
 import com.zman.stock.downloader.StockCountDownloader;
-import com.zman.stock.downloader.StockFinanceDownloader;
 import com.zman.stock.downloader.StockMainBusinessDownloader;
 
 @SpringBootApplication
@@ -22,7 +22,7 @@ public class Application implements CommandLineRunner {
     @Autowired
     private StockMainBusinessDownloader mainBusinessDownloader;
     @Autowired
-    private StockFinanceDownloader stockFinanceDownloader;
+    private StockBasicFinanceDownloader stockBasicFinanceDownloader;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class);
@@ -30,7 +30,7 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... arg0) throws Exception {
-        stockFinanceDownloader.download();
+        stockCountDownloader.download();
     }
 
 }

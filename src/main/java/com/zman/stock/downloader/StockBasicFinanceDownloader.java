@@ -19,7 +19,7 @@ import com.zman.stock.util.DownloadUtil;
  *
  */
 @Service
-public class StockFinanceDownloader extends AbstractLoopAllStockDownloader {
+public class StockBasicFinanceDownloader extends AbstractLoopAllStockDownloader {
 
     @Value("${stock.basic.finance.url}")
     private String baseUrl;

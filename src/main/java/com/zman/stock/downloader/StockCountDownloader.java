@@ -2,9 +2,9 @@ package com.zman.stock.downloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -37,21 +37,21 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
     @Override
     public void download() {
         // 加载所有股票基本信息
-        Map<String, StockBasicInfo> allStockMap = loadAllStockBasicInfo();
+        Collection<StockBasicInfo> allStock = stockDataService
+                .getAllStockBasicInfo();
 
         // 遍历并处理所有股票
         int processedCount = 0;
-        for (Entry<String, StockBasicInfo> stock : allStockMap.entrySet()) {
+        for (StockBasicInfo stock : allStock) {
 
-            String code = stock.getKey();
             try {
                 // 下载页面,并处理
-                Map<String, Object> result = process(code);
+                Map<String, Object> result = process(stock.code);
                 SortedMap<String, Object> tmp = new TreeMap<>(result);
                 // 保存信息
                 long count = (long) (Double.parseDouble((String) result.get(tmp
                         .lastKey())) * 10000);
-                stock.getValue().count = count;
+                stock.count = count;
             } catch (Exception e) {
                 logger.error("", e);
             }
@@ -64,7 +64,7 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
 
         // 保存
         try {
-            mapper.writeValue(new File(stockBasicInfoFile), allStockMap);
+            mapper.writeValue(new File(stockBasicInfoFile), allStock);
         } catch (IOException e) {
             logger.error("写入股票基本信息文件时出错", e);
         }

@@ -2,18 +2,18 @@ package com.zman.stock.downloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.exception.DownloadFailException;
+import com.zman.stock.service.StockDataService;
 
 /**
  * 遍历所有股票，进行下载
@@ -31,21 +31,23 @@ public abstract class AbstractLoopAllStockDownloader {
     @Value("${stock.basic.info.file}")
     protected String stockBasicInfoFile;
 
+    @Autowired
+    protected StockDataService stockDataService;
+
     public void download() {
         // 加载所有股票基本信息
-        Map<String, StockBasicInfo> allStockMap = loadAllStockBasicInfo();
+        Collection<StockBasicInfo> allStock = stockDataService
+                .getAllStockBasicInfo();
 
         // 遍历并处理所有股票
         int processedCount = 0;
-        for (Entry<String, StockBasicInfo> stock : allStockMap.entrySet()) {
-
-            String code = stock.getKey();
+        for (StockBasicInfo stock : allStock) {
 
             try {
                 // 下载页面,并处理
-                Map<String, ?> result = process(code);
+                Map<String, ?> result = process(stock.code);
                 // 保存信息
-                String filePath = getFilePath(code);
+                String filePath = getFilePath(stock.code);
                 mapper.writeValue(new File(filePath), result);
             } catch (Exception e) {
                 logger.error("", e);
@@ -57,27 +59,6 @@ public abstract class AbstractLoopAllStockDownloader {
             System.out.print(".");
         }
 
-    }
-
-    /**
-     * 加载所有股票的基本信息
-     * 
-     * @return
-     */
-    protected Map<String, StockBasicInfo> loadAllStockBasicInfo() {
-        Map<String, StockBasicInfo> allStockBasicInfoMap = null;
-        // 读取所有股票基本信息
-        try {
-            JavaType javaType = mapper.getTypeFactory().constructMapType(
-                    Map.class, String.class, StockBasicInfo.class);
-            allStockBasicInfoMap = mapper.readValue(
-                    new File(stockBasicInfoFile), javaType);
-        } catch (Exception e) {
-            logger.error("从文件中读取所有股票信息出错,file:{}", stockBasicInfoFile);
-            logger.error("", e);
-            allStockBasicInfoMap = Collections.emptyMap();
-        }
-        return allStockBasicInfoMap;
     }
 
     /**
