@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.zman.stock.downloader.StockCountDownloader;
 import com.zman.stock.service.StockBasicInfoService;
 
 @SpringBootApplication
@@ -14,6 +15,8 @@ public class Application implements CommandLineRunner {
 
     @Autowired
     private StockBasicInfoService stockBasicInfoService;
+    @Autowired
+    private StockCountDownloader stockCountDownloader;
 
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class);
@@ -21,7 +24,7 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... arg0) throws Exception {
-        stockBasicInfoService.run();
+        stockCountDownloader.download();
     }
 
 }

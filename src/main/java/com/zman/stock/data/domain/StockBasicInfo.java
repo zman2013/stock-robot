@@ -8,7 +8,7 @@ public class StockBasicInfo {
     /* 名称 */
     public String name;
 
-    /* 股票总股数 */
+    /* 股票总股数，单位个 */
     public long count;
 
     /* 主营业务 */
