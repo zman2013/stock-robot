@@ -43,7 +43,7 @@ public abstract class AbstractLoopAllStockDownloader {
 
             try {
                 // 下载页面,并处理
-                Map<String, Object> result = process(code);
+                Map<String, ?> result = process(code);
                 // 保存信息
                 String filePath = getFilePath(code);
                 mapper.writeValue(new File(filePath), result);
@@ -97,6 +97,6 @@ public abstract class AbstractLoopAllStockDownloader {
      * @throws DownloadFailException
      * @throws IOException
      */
-    protected abstract Map<String, Object> process(String code)
+    protected abstract Map<String, ?> process(String code)
             throws DownloadFailException, IOException;
 }
