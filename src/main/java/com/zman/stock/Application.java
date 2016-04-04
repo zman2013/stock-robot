@@ -10,6 +10,8 @@ import com.zman.stock.downloader.StockBasicFinanceDownloader;
 import com.zman.stock.downloader.StockBasicInfoDownloader;
 import com.zman.stock.downloader.StockCountDownloader;
 import com.zman.stock.downloader.StockMainBusinessDownloader;
+import com.zman.stock.selector.SelectStockByAnnualFinance;
+import com.zman.stock.selector.SelectStockByQuarterFinance;
 
 @SpringBootApplication
 @EnableScheduling
@@ -24,13 +26,18 @@ public class Application implements CommandLineRunner {
     @Autowired
     private StockBasicFinanceDownloader stockBasicFinanceDownloader;
 
+    @Autowired
+    private SelectStockByQuarterFinance selectByQuarter;
+    @Autowired
+    private SelectStockByAnnualFinance selectByAnnual;
+
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Application.class);
     }
 
     @Override
     public void run(String... arg0) throws Exception {
-        stockCountDownloader.download();
+        selectByAnnual.select();
     }
 
 }

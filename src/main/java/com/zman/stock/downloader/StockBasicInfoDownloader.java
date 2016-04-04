@@ -28,7 +28,7 @@ public class StockBasicInfoDownloader {
     private static final Logger logger = LoggerFactory
             .getLogger(StockBasicInfoDownloader.class);
 
-    @Value("${stock.basic.info.url")
+    @Value("${stock.basic.info.url}")
     private String baseUrl;
 
     @Value("${stock.basic.info.file}")

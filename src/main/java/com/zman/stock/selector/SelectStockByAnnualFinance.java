@@ -82,7 +82,7 @@ public class SelectStockByAnnualFinance {
 
             Map<String, Map<String, String>> finance = stockDataService
                     .getBasicFinanceData(stock.code);
-            stock.item = StockDataTools.computeLast3YearItem();
+            stock.item = StockDataTools.computeLast3YearReportDate();
 
             try {
                 for (int i = 0; i < stock.item.size(); i++) {

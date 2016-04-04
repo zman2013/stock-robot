@@ -1,4 +1,4 @@
-package com.zman.stock.downloader.finance;
+package com.zman.stock.data.domain;
 
 import java.util.Comparator;
 import java.util.HashMap;

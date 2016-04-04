@@ -82,7 +82,7 @@ public class SelectStockByQuarterFinance {
 
             Map<String, Map<String, String>> finance = stockDataService
                     .getBasicFinanceData(stock.code);
-            stock.item = StockDataTools.computeLast5QuaterItem();
+            stock.item = StockDataTools.computeLast5QuaterReportDate();
 
             try {
                 /**

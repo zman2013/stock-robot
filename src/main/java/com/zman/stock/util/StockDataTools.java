@@ -108,7 +108,7 @@ public class StockDataTools {
      * 
      * @return
      */
-    public static List<String> computeLast5QuaterItem() {
+    public static List<String> computeLast5QuaterReportDate() {
         DateTime datetime = new DateTime();
         int year = datetime.getYear();
         int month = datetime.getMonthOfYear();
@@ -135,7 +135,7 @@ public class StockDataTools {
      * 
      * @return
      */
-    public static List<String> computeLast3YearItem() {
+    public static List<String> computeLast3YearReportDate() {
         DateTime datetime = new DateTime();
         int year = datetime.getYear();
         return Arrays.asList((year-1) + "年年报", (year - 2) + "年年报", (year - 3)
