@@ -1,10 +1,15 @@
 package com.zman.stock.util;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.joda.time.DateTime;
+
+import com.zman.stock.selector.SelectStockData;
 
 public class StockDataTools {
 
@@ -22,7 +27,7 @@ public class StockDataTools {
 
         double profit = findLastYearNetProfit(item, finance);
 
-        Double pe = price / (profit / (count * 10000));
+        Double pe = price / (profit / count);
         return Float.parseFloat(String.format("%.2f", pe));
     }
 
@@ -129,16 +134,39 @@ public class StockDataTools {
     }
 
     /**
-     * 根据当前时间计算之前三年年报的报告期名称， 
-     * 例如：当前时间为为2016-04-04， 则之前3年年报报告期应为：
-     * "2015年年报", "2014年年报", "2013年年报"
+     * 根据当前时间计算之前三年年报的报告期名称， 例如：当前时间为为2016-04-04， 则之前3年年报报告期应为： "2015年年报",
+     * "2014年年报", "2013年年报"
      * 
      * @return
      */
     public static List<String> computeLast3YearReportDate() {
         DateTime datetime = new DateTime();
         int year = datetime.getYear();
-        return Arrays.asList((year-1) + "年年报", (year - 2) + "年年报", (year - 3)
+        return Arrays.asList((year - 1) + "年年报", (year - 2) + "年年报", (year - 3)
                 + "年年报");
+    }
+
+    public static SortedSet<SelectStockData> createSortedSetForStockData() {
+        SortedSet<SelectStockData> stockDataSet = new TreeSet<>(
+                new Comparator<SelectStockData>() {
+                    public int compare(SelectStockData d1, SelectStockData d2) {
+                        int result = -d1.revenueRaise.get(0).compareTo(
+                                d2.revenueRaise.get(0));
+                        if (result == 0) {
+                            result = -d1.profitRaise.get(0).compareTo(
+                                    d2.profitRaise.get(0));
+                        }
+                        if (result == 0) {
+                            result = -d1.revenueRaise.get(1).compareTo(
+                                    d2.revenueRaise.get(1));
+                        }
+                        if (result == 0) {
+                            result = -d1.profitRaise.get(1).compareTo(
+                                    d2.profitRaise.get(1));
+                        }
+                        return result;
+                    }
+                });
+        return stockDataSet;
     }
 }

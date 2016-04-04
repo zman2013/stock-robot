@@ -1,7 +1,6 @@
 package com.zman.stock.service;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class StockDataService {
      * 
      * @return
      */
-    public Collection<StockBasicInfo> getAllStockBasicInfo() {
+    public Map<String, StockBasicInfo> getAllStockBasicInfo() {
         // 读取所有股票基本信息
         try {
             JavaType javaType = mapper.getTypeFactory().constructMapType(
@@ -47,7 +46,7 @@ public class StockDataService {
             logger.error("", e);
             allStockBasicInfoMap = Collections.emptyMap();
         }
-        return allStockBasicInfoMap.values();
+        return allStockBasicInfoMap;
     }
 
     /**

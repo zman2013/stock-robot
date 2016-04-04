@@ -37,7 +37,9 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... arg0) throws Exception {
-        selectByAnnual.select();
+        // selectByQuarter.select();
+        // mainBusinessDownloader.download();
+        stockBasicInfoDownloader.download();
     }
 
 }

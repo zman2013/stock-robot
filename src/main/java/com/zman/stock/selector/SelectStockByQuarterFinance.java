@@ -49,11 +49,11 @@ public class SelectStockByQuarterFinance {
     private void selectImpl() throws Exception {
 
         Collection<StockBasicInfo> allStock = stockDataService
-                .getAllStockBasicInfo();
+                .getAllStockBasicInfo().values();
 
-        Set<ChooseStockData> stockDataList = new TreeSet<>(
-                new Comparator<ChooseStockData>() {
-                    public int compare(ChooseStockData d1, ChooseStockData d2) {
+        Set<SelectStockData> stockDataList = new TreeSet<>(
+                new Comparator<SelectStockData>() {
+                    public int compare(SelectStockData d1, SelectStockData d2) {
                         int result = -d1.revenueRaise.get(0).compareTo(
                                 d2.revenueRaise.get(0));
                         if (result == 0) {
@@ -73,7 +73,7 @@ public class SelectStockByQuarterFinance {
                 });
 
         for (StockBasicInfo s : allStock) {
-            ChooseStockData stock = new ChooseStockData();
+            SelectStockData stock = new SelectStockData();
             stock.code = s.code;
             stock.price = Double.parseDouble(s.price);
             stock.name = s.name;
@@ -82,22 +82,23 @@ public class SelectStockByQuarterFinance {
 
             Map<String, Map<String, String>> finance = stockDataService
                     .getBasicFinanceData(stock.code);
-            stock.item = StockDataTools.computeLast5QuaterReportDate();
+            stock.reportDateList = StockDataTools
+                    .computeLast5QuaterReportDate();
 
             try {
                 /**
                  * 当季的财务报告可能未发布，因此对第一个信息不进行检查
                  */
-                for (int i = 0; i < stock.item.size(); i++) {
-                    checkRaise(finance, stock.item.get(i), stock);
+                for (int i = 0; i < stock.reportDateList.size(); i++) {
+                    checkRaise(finance, stock.reportDateList.get(i), stock);
                 }
 
-                if (finance.containsKey(stock.item.get(0))) {
+                if (finance.containsKey(stock.reportDateList.get(0))) {
                     stock.pe = StockDataTools.computePE(stock.price,
-                            stock.count, stock.item.get(0), finance);
+                            stock.count, stock.reportDateList.get(0), finance);
                 } else {
                     stock.pe = StockDataTools.computePE(stock.price,
-                            stock.count, stock.item.get(1), finance);
+                            stock.count, stock.reportDateList.get(1), finance);
                 }
                 /** pe < 50 过滤 */
                 if (stock.pe < 50) {
@@ -121,7 +122,7 @@ public class SelectStockByQuarterFinance {
      * @param stock
      */
     public static void checkRaise(Map<String, Map<String, String>> finance,
-            String item, ChooseStockData stock) {
+            String item, SelectStockData stock) {
         if (finance.containsKey(item)) {
             // 检查利润增幅
             float profitRaise = Float.parseFloat(finance.get(item).get(

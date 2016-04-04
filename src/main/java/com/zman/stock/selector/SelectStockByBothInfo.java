@@ -49,16 +49,16 @@ public class SelectStockByBothInfo {
 
     private void selectImpl() throws JsonParseException, JsonMappingException,
             IOException {
-        Set<ChooseStockData> annualData = mapper.readValue(new File(
-                annualFilepath), new TypeReference<Set<ChooseStockData>>() {
+        Set<SelectStockData> annualData = mapper.readValue(new File(
+                annualFilepath), new TypeReference<Set<SelectStockData>>() {
         });
-        Set<ChooseStockData> quarterData = mapper.readValue(new File(
-                quarterFilepath), new TypeReference<Set<ChooseStockData>>() {
+        Set<SelectStockData> quarterData = mapper.readValue(new File(
+                quarterFilepath), new TypeReference<Set<SelectStockData>>() {
         });
 
-        Set<ChooseStockData> finalData = new TreeSet<>(
-                new Comparator<ChooseStockData>() {
-                    public int compare(ChooseStockData d1, ChooseStockData d2) {
+        Set<SelectStockData> finalData = new TreeSet<>(
+                new Comparator<SelectStockData>() {
+                    public int compare(SelectStockData d1, SelectStockData d2) {
                         int result = -d1.revenueRaise.get(0).compareTo(
                                 d2.revenueRaise.get(0));
                         if (result == 0) {

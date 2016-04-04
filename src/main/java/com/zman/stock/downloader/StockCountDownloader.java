@@ -2,7 +2,6 @@ package com.zman.stock.downloader;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
@@ -37,12 +36,12 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
     @Override
     public void download() {
         // 加载所有股票基本信息
-        Collection<StockBasicInfo> allStock = stockDataService
+        Map<String, StockBasicInfo> allStock = stockDataService
                 .getAllStockBasicInfo();
 
         // 遍历并处理所有股票
         int processedCount = 0;
-        for (StockBasicInfo stock : allStock) {
+        for (StockBasicInfo stock : allStock.values()) {
 
             try {
                 // 下载页面,并处理
@@ -60,6 +59,7 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
                 System.out.println();
             }
             System.out.print(".");
+
         }
 
         // 保存

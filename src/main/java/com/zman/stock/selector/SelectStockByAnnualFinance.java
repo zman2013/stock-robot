@@ -49,11 +49,11 @@ public class SelectStockByAnnualFinance {
     private void selectImpl() throws Exception {
 
         Collection<StockBasicInfo> allStock = stockDataService
-                .getAllStockBasicInfo();
+                .getAllStockBasicInfo().values();
 
-        Set<ChooseStockData> stockDataList = new TreeSet<>(
-                new Comparator<ChooseStockData>() {
-                    public int compare(ChooseStockData d1, ChooseStockData d2) {
+        Set<SelectStockData> stockDataList = new TreeSet<>(
+                new Comparator<SelectStockData>() {
+                    public int compare(SelectStockData d1, SelectStockData d2) {
                         int result = -d1.revenueRaise.get(0).compareTo(
                                 d2.revenueRaise.get(0));
                         if (result == 0) {
@@ -73,7 +73,7 @@ public class SelectStockByAnnualFinance {
                 });
 
         for (StockBasicInfo s : allStock) {
-            ChooseStockData stock = new ChooseStockData();
+            SelectStockData stock = new SelectStockData();
             stock.code = s.code;
             stock.price = Double.parseDouble(s.price);
             stock.name = s.name;
@@ -82,21 +82,21 @@ public class SelectStockByAnnualFinance {
 
             Map<String, Map<String, String>> finance = stockDataService
                     .getBasicFinanceData(stock.code);
-            stock.item = StockDataTools.computeLast3YearReportDate();
+            stock.reportDateList = StockDataTools.computeLast3YearReportDate();
 
             try {
-                for (int i = 0; i < stock.item.size(); i++) {
+                for (int i = 0; i < stock.reportDateList.size(); i++) {
                     SelectStockByQuarterFinance.checkRaise(finance,
-                            stock.item.get(i), stock);
+                            stock.reportDateList.get(i), stock);
                 }
 
                 /** pe < 50 过滤 */
-                if (finance.containsKey(stock.item.get(0))) {
+                if (finance.containsKey(stock.reportDateList.get(0))) {
                     stock.pe = StockDataTools.computePE(stock.price,
-                            stock.count, stock.item.get(0), finance);
+                            stock.count, stock.reportDateList.get(0), finance);
                 } else {
                     stock.pe = StockDataTools.computePE(stock.price,
-                            stock.count, stock.item.get(1), finance);
+                            stock.count, stock.reportDateList.get(1), finance);
                 }
                 if (stock.pe < 50) {
                     stockDataList.add(stock);

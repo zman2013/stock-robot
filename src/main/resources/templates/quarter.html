@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>按季度财务信息删选出的股票</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <table border="1" style="text-align:right">
+        <tr>
+            <td rowspan="2">名称</td>
+            <td rowspan="2">代码</td>
+            <td rowspan="2">pe</td>
+            <td colspan="5">收入增长率</td>
+            <td colspan="5">利润增长率</td>
+            <td rowspan="2">主营业务</td>
+        </tr>
+        <tr>
+            <td th:each="reportDate : ${stockDataList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+            <td th:each="reportDate : ${stockDataList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+        </tr>
+        <tr th:each="stockData : ${stockDataList}">
+            <td th:text="${stockData.name}"></td>
+            <td th:text="${stockData.code}"></td>
+            <td th:text="${stockData.pe}"></td>
+            <td th:each="revenueRaise : ${stockData.revenueRaise}" th:text="${revenueRaise}" ></td>
+            <td th:each="profitRaise : ${stockData.profitRaise}" th:text="${profitRaise}" ></td>
+            <td th:text="${stockData.mainBusiness}"></td>
+        </tr>
+    </table>
+</body>
+</html>

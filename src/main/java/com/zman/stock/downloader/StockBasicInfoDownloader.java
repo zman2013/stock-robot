@@ -2,6 +2,7 @@ package com.zman.stock.downloader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,12 +10,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.exception.DownloadFailException;
+import com.zman.stock.service.StockDataService;
 import com.zman.stock.util.DownloadUtil;
 
 /**
@@ -36,6 +39,9 @@ public class StockBasicInfoDownloader {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Autowired
+    private StockDataService stockDataService;
+
     public void download() throws IOException {
         Map<String, StockBasicInfo> result = new HashMap<>();
 
@@ -56,6 +62,16 @@ public class StockBasicInfoDownloader {
                 logger.error("", e);
             }
         }
+        // 注入count、mainBusiness，如果有
+        Collection<StockBasicInfo> tmp = stockDataService
+                .getAllStockBasicInfo().values();
+        tmp.forEach(info -> {
+            if (result.containsKey(info.code)) {
+                StockBasicInfo t = result.get(info.code);
+                t.count = info.count;
+                t.mainBusiness = info.mainBusiness;
+            }
+        });
         // 保存
         objectMapper.writeValue(new File(filePath), result);
     }

@@ -264,7 +264,7 @@ public class StockDetailedFinanceDownloader {
     private Map<String, String> constructStockMapping() throws Exception {
         Map<String, String> mapping = new HashMap<>();
         Collection<StockBasicInfo> allStock = stockDataService
-                .getAllStockBasicInfo();
+                .getAllStockBasicInfo().values();
         allStock.forEach(stock -> {
             mapping.put(stock.code, stock.name);
         });
