@@ -64,9 +64,6 @@ public class SelectStockByQuarterFinance {
                     .getBasicFinanceData(stock.code);
             stock.reportDateList = StockDataTools
                     .computeLast5QuaterReportDate();
-            if (s.code.equals("300296")) {
-                System.out.println("asdf");
-            }
             try {
                 /**
                  * 当季的财务报告可能未发布，因此对第一个信息不进行检查

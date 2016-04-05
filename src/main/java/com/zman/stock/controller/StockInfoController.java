@@ -41,7 +41,8 @@ public class StockInfoController {
         // 财务指标
         String[] cashItemArray = new String[] { "经营活动产生的现金流量净额",
                 "投资活动产生的现金流量净额", "筹资活动产生的现金流量净额" };
-        String[] financeItemArray = new String[] { "营业收入", "净利润" };
+        String[] financeItemArray = new String[] { "营业收入", "收入同比增长率", "净利润",
+                "净利润同比增长率" };
 
         List<CashFlowData> cashFlowDataList = new LinkedList<>();
         // 提取信息
@@ -51,9 +52,16 @@ public class StockInfoController {
             cashFlowData.item = item;
             for (String date : financeDateArray) { // 报告期
                 if (basicFinance.containsKey(date)) {
-                    String value = String
-                            .format("%.2f", Double.parseDouble(basicFinance
-                                    .get(date).get(item)) / 100000000); // 除以一亿
+                    double tmp = Double.parseDouble(basicFinance.get(date).get(
+                            item));
+                    String value = "";
+                    if (!item.endsWith("率")) {
+                        tmp = tmp / 100000000;// 除以一亿
+                        value = String.format("%.2f", tmp);
+                    } else {
+                        value = String.format("%.2f%%", tmp);
+                    }
+
                     cashFlowData.value.add(value);
                 } else {
                     cashFlowData.value.add("");
