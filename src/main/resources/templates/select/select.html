@@ -17,7 +17,7 @@
             <td rowspan="2">pe</td>
             <td th:attr="colspan=${stockDataList.get(0).reportDateList.size()}">收入增长率</td>
             <td th:attr="colspan=${stockDataList.get(0).reportDateList.size()}">利润增长率</td>
-            <td rowspan="2">主营业务</td>
+            <td rowspan="2" style="text-align:left">主营业务</td>
         </tr>
         <tr>
             <td th:each="reportDate : ${stockDataList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
