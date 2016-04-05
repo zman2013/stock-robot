@@ -5,13 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
+    <div><a th:href="@{/select/quarter}">季报</a>
+    |<a th:href="@{/select/annual}">年报</a>
+    |<a th:href="@{/select/both}">交集</a>
+    |<a th:href="@{/stock/cash-flow?code=000848}">现金流</a></div>
+
     <table border="1" style="text-align:right">
         <tr>
             <td rowspan="2">名称</td>
             <td rowspan="2">代码</td>
             <td rowspan="2">pe</td>
-            <td colspan="3">收入增长率</td>
-            <td colspan="3">利润增长率</td>
+            <td th:attr="colspan=${stockDataList.get(0).reportDateList.size()}">收入增长率</td>
+            <td th:attr="colspan=${stockDataList.get(0).reportDateList.size()}">利润增长率</td>
             <td rowspan="2">主营业务</td>
         </tr>
         <tr>
@@ -19,7 +24,7 @@
             <td th:each="reportDate : ${stockDataList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
         </tr>
         <tr th:each="stockData : ${stockDataList}">
-            <td th:text="${stockData.name}"></td>
+            <td><a th:text="${stockData.name}" th:href="@{/stock/cash-flow(code=${stockData.code})}"></a></td>
             <td th:text="${stockData.code}"></td>
             <td th:text="${stockData.pe}"></td>
             <td th:each="revenueRaise : ${stockData.revenueRaise}" th:text="${revenueRaise}" ></td>

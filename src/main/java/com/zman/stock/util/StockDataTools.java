@@ -146,6 +146,82 @@ public class StockDataTools {
                 + "年年报");
     }
 
+    /**
+     * 财务详情文档的报告期生成方法 ：三年的报告期 1512,1509,1506,1503,...
+     * 
+     * @return
+     */
+    public static List<String> computeDetailFinanceReportDate() {
+        DateTime datetime = new DateTime();
+        int year = datetime.getYear() % 100;
+        int month = datetime.getMonthOfYear();
+        if (month > 9) {
+            return Arrays.asList(year + "09", year + "06", year + "03",
+                    (year - 1) + "12", (year - 1) + "09", (year - 1) + "06",
+                    (year - 1) + "03", (year - 2) + "12", (year - 2) + "09",
+                    (year - 2) + "06", (year - 2) + "03", (year - 3) + "12");
+        } else if (month > 6) {
+            return Arrays.asList(year + "06", year + "03", (year - 1) + "12",
+                    (year - 1) + "09", (year - 1) + "06", (year - 1) + "03",
+                    (year - 2) + "12", (year - 2) + "09", (year - 2) + "06",
+                    (year - 2) + "03", (year - 3) + "12", (year - 3) + "09");
+        } else if (month > 3) {
+            return Arrays.asList(year + "03", (year - 1) + "12", (year - 1)
+                    + "09", (year - 1) + "06", (year - 1) + "03", (year - 2)
+                    + "12", (year - 2) + "09", (year - 2) + "06", (year - 2)
+                    + "03", (year - 3) + "12", (year - 3) + "09", (year - 3)
+                    + "06");
+        } else {
+            return Arrays.asList((year - 1) + "12", (year - 1) + "09",
+                    (year - 1) + "06", (year - 1) + "03", (year - 2) + "12",
+                    (year - 2) + "09", (year - 2) + "06", (year - 2) + "03",
+                    (year - 3) + "12", (year - 3) + "09", (year - 3) + "06",
+                    (year - 3) + "03");
+        }
+    }
+
+    /**
+     * 简要财务文档的报告期生成方法 ：三年的报告期 "2016年一季报"，"2015年年报", "2015年三季报", "2015年中报",
+     * "2015年一季报"
+     * 
+     * @return
+     */
+    public static List<String> computeBasicFinanceReportDate() {
+        DateTime datetime = new DateTime();
+        int year = datetime.getYear();
+        int month = datetime.getMonthOfYear();
+        if (month > 9) {
+            return Arrays
+                    .asList(year + "年三季报", year + "年中报", year + "年一季报",
+                            (year - 1) + "年年报", (year - 1) + "年三季报", (year - 1)
+                                    + "年中报", (year - 1) + "年一季报", (year - 2)
+                                    + "年年报", (year - 2) + "年三季报", (year - 2)
+                                    + "年中报", (year - 2) + "年一季报", (year - 3)
+                                    + "年年报");
+        } else if (month > 6) {
+            return Arrays.asList(year + "年中报", year + "年一季报", (year - 1)
+                    + "年年报", (year - 1) + "年三季报", (year - 1) + "年中报",
+                    (year - 1) + "年一季报", (year - 2) + "年年报", (year - 2)
+                            + "年三季报", (year - 2) + "年中报", (year - 2) + "年一季报",
+                    (year - 3) + "年年报", (year - 3) + "年三季报");
+        } else if (month > 3) {
+            return Arrays
+                    .asList(year + "年一季报", (year - 1) + "年年报", (year - 1)
+                            + "年三季报", (year - 1) + "年中报", (year - 1) + "年一季报",
+                            (year - 2) + "年年报", (year - 2) + "年三季报", (year - 2)
+                                    + "年中报", (year - 2) + "年一季报", (year - 3)
+                                    + "年年报", (year - 3) + "年三季报", (year - 3)
+                                    + "年中报");
+        } else {
+            return Arrays.asList((year - 1) + "年年报", (year - 1) + "年三季报",
+                    (year - 1) + "年中报", (year - 1) + "年一季报",
+                    (year - 2) + "年年报", (year - 2) + "年三季报",
+                    (year - 2) + "年中报", (year - 2) + "年一季报",
+                    (year - 3) + "年年报", (year - 3) + "年三季报",
+                    (year - 3) + "年中报", (year - 3) + "年一季报");
+        }
+    }
+
     public static SortedSet<SelectStockData> createSortedSetForStockData() {
         SortedSet<SelectStockData> stockDataSet = new TreeSet<>(
                 new Comparator<SelectStockData>() {

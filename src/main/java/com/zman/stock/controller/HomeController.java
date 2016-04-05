@@ -21,7 +21,7 @@ public class HomeController {
         List<SelectStockData> stockDataList = loadSelectStockService
                 .loadQuarter();
         model.addAttribute("stockDataList", stockDataList);
-        return "select/quarter";
+        return "select/select";
     }
 
     @RequestMapping("/select/annual")
@@ -29,13 +29,13 @@ public class HomeController {
         List<SelectStockData> stockDataList = loadSelectStockService
                 .loadAnnual();
         model.addAttribute("stockDataList", stockDataList);
-        return "select/annual";
+        return "select/select";
     }
 
     @RequestMapping("/select/both")
     public String both(Model model) throws Exception {
         List<SelectStockData> stockDataList = loadSelectStockService.loadBoth();
         model.addAttribute("stockDataList", stockDataList);
-        return "select/both";
+        return "select/select";
     }
 }
