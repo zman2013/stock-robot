@@ -2,10 +2,8 @@ package com.zman.stock.selector;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,26 +49,8 @@ public class SelectStockByQuarterFinance {
         Collection<StockBasicInfo> allStock = stockDataService
                 .getAllStockBasicInfo().values();
 
-        Set<SelectStockData> stockDataList = new TreeSet<>(
-                new Comparator<SelectStockData>() {
-                    public int compare(SelectStockData d1, SelectStockData d2) {
-                        int result = -d1.revenueRaise.get(0).compareTo(
-                                d2.revenueRaise.get(0));
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(0).compareTo(
-                                    d2.profitRaise.get(0));
-                        }
-                        if (result == 0) {
-                            result = -d1.revenueRaise.get(1).compareTo(
-                                    d2.revenueRaise.get(1));
-                        }
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(1).compareTo(
-                                    d2.profitRaise.get(1));
-                        }
-                        return result;
-                    }
-                });
+        Set<SelectStockData> stockDataList = StockDataTools
+                .createSortedSetForStockData();
 
         for (StockBasicInfo s : allStock) {
             SelectStockData stock = new SelectStockData();
@@ -84,7 +64,9 @@ public class SelectStockByQuarterFinance {
                     .getBasicFinanceData(stock.code);
             stock.reportDateList = StockDataTools
                     .computeLast5QuaterReportDate();
-
+            if (s.code.equals("300296")) {
+                System.out.println("asdf");
+            }
             try {
                 /**
                  * 当季的财务报告可能未发布，因此对第一个信息不进行检查
@@ -143,10 +125,8 @@ public class SelectStockByQuarterFinance {
             }
             stock.revenueRaise.add(revenueRaise);
         } else {
-            stock.profitRaise.add(Float.parseFloat(finance.get(item).get(
-                    "净利润同比增长率")));
-            stock.revenueRaise.add(Float.parseFloat(finance.get(item).get(
-                    "收入同比增长率")));
+            stock.profitRaise.add(10000f);
+            stock.revenueRaise.add(10000f);
         }
 
     }

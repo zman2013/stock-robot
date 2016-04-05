@@ -117,13 +117,13 @@ public class StockDataTools {
         DateTime datetime = new DateTime();
         int year = datetime.getYear();
         int month = datetime.getMonthOfYear();
-        if (month > 10) {
+        if (month > 9) {
             return Arrays.asList(year + "年三季报", year + "年中报", year + "年一季报",
                     (year - 1) + "年年报", (year - 1) + "年三季报");
-        } else if (month > 7) {
+        } else if (month > 6) {
             return Arrays.asList(year + "年中报", year + "年一季报", (year - 1)
                     + "年年报", (year - 1) + "年三季报", (year - 1) + "年中报");
-        } else if (month > 4) {
+        } else if (month > 3) {
             return Arrays.asList(year + "年一季报", (year - 1) + "年年报", (year - 1)
                     + "年三季报", (year - 1) + "年中报", (year - 1) + "年一季报");
         } else {

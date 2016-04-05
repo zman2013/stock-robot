@@ -14,6 +14,7 @@ import com.zman.stock.Application;
 import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.downloader.StockBasicInfoDownloader;
 import com.zman.stock.downloader.StockCountDownloader;
+import com.zman.stock.downloader.StockMainBusinessDownloader;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
@@ -22,13 +23,16 @@ public class StockDataServiceTest {
 
     @Autowired
     private StockDataService stockDataService;
-
     @Autowired
     private StockBasicInfoDownloader basicInfoDownloader;
-
     @Autowired
     private StockCountDownloader stockCountDownloader;
+    @Autowired
+    private StockMainBusinessDownloader mainBusinessDownloader;
 
+    /**
+     * 加载股票基本信息
+     */
     @Test
     public void loadStockBasicInfo() {
         Collection<StockBasicInfo> list = stockDataService
@@ -36,13 +40,29 @@ public class StockDataServiceTest {
         System.out.println(list.size());
     }
 
+    /**
+     * 下载股票基本信息
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void basicInfoDownloader() throws IOException {
+        basicInfoDownloader.download();
+    }
+
+    /**
+     * 下载股票股数，并更新基本信息
+     */
     @Test
     public void stockCountDownload() {
         stockCountDownloader.download();
     }
 
+    /**
+     * 下载公司主营业务，并更新基本信息
+     */
     @Test
-    public void basicInfoDownloader() throws IOException {
-        basicInfoDownloader.download();
+    public void stockMainBusinessDownload() {
+        mainBusinessDownloader.download();
     }
 }

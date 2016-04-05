@@ -49,4 +49,39 @@ public class LoadSelectStockService {
 
         return quarterDataList;
     }
+
+    /**
+     * 加载按年度财务信息删选出的结果
+     * 
+     * @param model
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
+    public List<SelectStockData> loadAnnual() throws Exception {
+        List<SelectStockData> annualDataList = mapper.readValue(new File(
+                annualFilepath), new TypeReference<List<SelectStockData>>() {
+        });
+
+        return annualDataList;
+    }
+
+    /**
+     * 取季度筛选和年度筛选的交集
+     * 
+     * @param model
+     * @return
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
+    public List<SelectStockData> loadBoth() throws Exception {
+        List<SelectStockData> bothDataList = mapper.readValue(new File(
+                bothFilepath), new TypeReference<List<SelectStockData>>() {
+        });
+
+        return bothDataList;
+    }
+
 }
