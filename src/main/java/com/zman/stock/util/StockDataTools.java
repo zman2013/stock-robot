@@ -96,10 +96,19 @@ public class StockDataTools {
             }
         } else if (day < 630) {
             item = year + "年一季报";
+            if (!financeMap.containsKey(item)) {
+                item = (year - 1) + "年年报";
+            }
         } else if (day < 930) {
             item = year + "年中报";
+            if (!financeMap.containsKey(item)) {
+                item = year + "年一季报";
+            }
         } else {
             item = year + "年三季报";
+            if (!financeMap.containsKey(item)) {
+                item = year + "年中报";
+            }
         }
 
         profit = StockDataTools.findLastYearNetProfit(item, financeMap);

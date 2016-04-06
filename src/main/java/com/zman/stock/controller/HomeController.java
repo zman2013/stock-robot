@@ -16,7 +16,7 @@ public class HomeController {
     @Autowired
     private LoadSelectStockService loadSelectStockService;
 
-    @RequestMapping("/select/quarter")
+    @RequestMapping(value = { "/select/quarter", "", "/" })
     public String quarter(Model model) throws Exception {
         List<SelectStockData> stockDataList = loadSelectStockService
                 .loadQuarter();
