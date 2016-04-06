@@ -63,7 +63,6 @@ public class StockFuQuanQianMonthPriceHistoryDownloader {
         Matcher matcher = pattern.matcher(content);
         while (matcher.find()) {
             StockPrice p = new StockPrice();
-            System.out.println(matcher.group(0));
             p.date = matcher.group(1);
             p.maxPrice = Float.parseFloat(matcher.group(2));
             p.minPrice = Float.parseFloat(matcher.group(3));
