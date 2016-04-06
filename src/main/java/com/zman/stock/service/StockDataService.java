@@ -2,6 +2,7 @@ package com.zman.stock.service;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zman.stock.data.domain.HoldStockInfo;
 import com.zman.stock.data.domain.StockBasicInfo;
 
 @Service
@@ -27,7 +29,8 @@ public class StockDataService {
     @Value("${stock.basic.finance.dir}")
     private String basicFinanceDir;
 
-    private Map<String, StockBasicInfo> allStockBasicInfoMap = null;
+    @Value("${stock.hold.info.file}")
+    private String holdStockInfoFile;
 
     /**
      * 读取文件获得所有股票基本信息
@@ -35,6 +38,8 @@ public class StockDataService {
      * @return
      */
     public Map<String, StockBasicInfo> getAllStockBasicInfo() {
+        Map<String, StockBasicInfo> allStockBasicInfoMap = null;
+
         // 读取所有股票基本信息
         try {
             JavaType javaType = mapper.getTypeFactory().constructMapType(
@@ -67,6 +72,25 @@ public class StockDataService {
         Map<String, Map<String, String>> financeMap = mapper.readValue(
                 new File(basicFinanceDir, stockCode), Map.class);
         return financeMap;
+    }
+
+    /**
+     * 读取持有的股票信息: code -> date
+     */
+    public Map<String, HoldStockInfo> loadHoldStockInfo() {
+        Map<String, HoldStockInfo> holdStockInfoMap = null;
+        // 读取所有股票基本信息
+        try {
+            JavaType javaType = mapper.getTypeFactory().constructMapType(
+                    Map.class, String.class, HoldStockInfo.class);
+            holdStockInfoMap = mapper.readValue(new File(holdStockInfoFile),
+                    javaType);
+        } catch (Exception e) {
+            logger.error("从文件中读取持有的股票信息出错,file:{}", holdStockInfoFile);
+            logger.error("", e);
+            holdStockInfoMap = new HashMap<>();
+        }
+        return holdStockInfoMap;
     }
 
 }

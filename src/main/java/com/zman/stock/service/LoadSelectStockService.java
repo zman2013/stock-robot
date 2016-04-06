@@ -30,7 +30,7 @@ public class LoadSelectStockService {
     @Value("${stock.select.by.quarter.finance.file}")
     private String quarterFilepath;
 
-    @Value("${stock.select.by.both.file")
+    @Value("${stock.select.by.both.finance.file}")
     private String bothFilepath;
 
     /**

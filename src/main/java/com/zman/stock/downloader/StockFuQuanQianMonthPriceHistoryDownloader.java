@@ -31,7 +31,7 @@ public class StockFuQuanQianMonthPriceHistoryDownloader {
         String baseUrl = "http://d.10jqka.com.cn/v2/line/hs_%s/21/last.js";
 
         List<StockPrice> stockPriceList = null;
-        ;
+
         try {
             stockPriceList = downloadPrice(String.format(baseUrl, code));
         } catch (DownloadFailException e) {

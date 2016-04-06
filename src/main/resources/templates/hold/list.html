@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>买入股票</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<div>
+		<a th:href="@{/select/quarter}">季报</a> |<a th:href="@{/select/annual}">年报</a>
+		|<a th:href="@{/select/both}">交集</a> |<a
+			th:href="@{/stock/main-finance?code=000848}">现金流</a>
+			| <a th:href="@{/hold/list}">买入股票</a>
+	</div>
+
+    <div style="margin-top:10px">买入</div>
+	<form th:attr="action=@{/hold/new}">
+		<fieldset style="border:0">
+			代码: <input type="text" name="code" />
+			日期: <input type="text" name="date" />
+			<input type="submit" value="提交" />
+		</fieldset>
+	</form>
+
+    <div>持有的股票</div>
+	<table border="1" style="text-align: right">
+		<tr>
+			<td style="width: 66px">名称</td>
+			<td>代码</td>
+			<td>买入时间</td>
+			<td>收益</td>
+			<td>操作</td>
+		</tr>
+		<tr th:each="stockData : ${stockMap.values()}">
+			<td><a th:text="${stockData.name}"
+				th:href="@{/stock/main-finance(code=${stockData.code})}"></a></td>
+			<td th:text="${stockData.code}"></td>
+			<td th:text="${stockData.date}"></td>
+			<td th:text="${stockData.profit}"></td>
+			<td style="color:red" th:if="${stockData.action=='卖出'}">卖出</td>
+			<td style="color:green" th:if="${stockData.action!='卖出'}" th:text="${stockData.action}"></td>
+		</tr>
+	</table>
+</body>
+</html>
