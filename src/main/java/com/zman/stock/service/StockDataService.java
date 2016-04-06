@@ -1,8 +1,8 @@
 package com.zman.stock.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -75,9 +75,11 @@ public class StockDataService {
     }
 
     /**
-     * 读取持有的股票信息: code -> date
+     * 读取持有的股票信息
+     * 
+     * @throws Exception
      */
-    public Map<String, HoldStockInfo> loadHoldStockInfo() {
+    public Map<String, HoldStockInfo> loadHoldStockInfo() throws Exception {
         Map<String, HoldStockInfo> holdStockInfoMap = null;
         // 读取所有股票基本信息
         try {
@@ -87,10 +89,24 @@ public class StockDataService {
                     javaType);
         } catch (Exception e) {
             logger.error("从文件中读取持有的股票信息出错,file:{}", holdStockInfoFile);
-            logger.error("", e);
-            holdStockInfoMap = new HashMap<>();
+            throw e;
         }
         return holdStockInfoMap;
+    }
+
+    /**
+     * 写入或更新持有股票信息
+     * 
+     * @throws IOException
+     */
+    public void writeHoldStockInfo(Map<String, HoldStockInfo> map)
+            throws IOException {
+        try {
+            mapper.writeValue(new File(holdStockInfoFile), map);
+        } catch (IOException e) {
+            logger.error("写入或更新持有股票信息出错,file: {}", holdStockInfoFile);
+            throw e;
+        }
     }
 
 }

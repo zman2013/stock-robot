@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.HttpStatusException;
 import org.springframework.stereotype.Service;
 
 import com.zman.stock.data.domain.StockPrice;
@@ -34,7 +35,7 @@ public class StockFuQuanQianMonthPriceHistoryDownloader {
 
         try {
             stockPriceList = downloadPrice(String.format(baseUrl, code));
-        } catch (DownloadFailException e) {
+        } catch (DownloadFailException | HttpStatusException e) {
             logger.error(e.getMessage(), e);
             stockPriceList = Collections.emptyList();
         }
@@ -52,9 +53,10 @@ public class StockFuQuanQianMonthPriceHistoryDownloader {
      * @param code
      * @return
      * @throws DownloadFailException
+     * @throws HttpStatusException
      */
     private List<StockPrice> downloadPrice(String url)
-            throws DownloadFailException {
+            throws DownloadFailException, HttpStatusException {
 
         String content = DownloadUtil.downloadContent(url);
 

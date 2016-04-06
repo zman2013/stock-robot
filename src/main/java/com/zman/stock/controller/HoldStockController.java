@@ -1,7 +1,6 @@
 package com.zman.stock.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.HoldStockInfo;
 import com.zman.stock.data.domain.StockBasicInfo;
@@ -29,16 +26,14 @@ public class HoldStockController {
     protected final static ObjectMapper mapper = new ObjectMapper();
 
     @RequestMapping("list")
-    public String list(Model model) throws JsonParseException,
-            JsonMappingException, IOException {
+    public String list(Model model) throws Exception {
         Map<String, HoldStockInfo> map = stockDataService.loadHoldStockInfo();
         model.addAttribute("stockMap", map);
         return "hold/list";
     }
 
     @RequestMapping("new")
-    public String newStock(String code, String date) throws JsonParseException,
-            JsonMappingException, IOException {
+    public String newStock(String code, String date) throws Exception {
         StockBasicInfo stockBasicInfo = stockDataService.getAllStockBasicInfo()
                 .get(code);
         HoldStockInfo stock = new HoldStockInfo(stockBasicInfo.name, code, date);

@@ -1,5 +1,6 @@
 package com.zman.stock.util;
 
+import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -39,9 +40,10 @@ public class DownloadUtil {
      * @param url
      * @return
      * @throws DownloadFailException
+     * @throws HttpStatusException
      */
     public static String downloadContent(String url)
-            throws DownloadFailException {
+            throws DownloadFailException, HttpStatusException {
         // 如果失败，重试三次
         int i = 0;
         while (i < 3) {
@@ -49,6 +51,8 @@ public class DownloadUtil {
                 String content = Jsoup.connect(url).ignoreContentType(true)
                         .execute().body();
                 return content;
+            } catch (HttpStatusException e) {
+                throw e;
             } catch (Exception e) {
                 i++;
                 if (i >= 3) {
