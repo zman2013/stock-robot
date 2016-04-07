@@ -2,12 +2,11 @@ package com.zman.stock.selector;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +14,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zman.stock.service.StockDataService;
+import com.zman.stock.util.StockDataTools;
 
 /**
  * 以ChooseStockByAnnualFinance和ChooseStockByQuarterFinance的输出为输入， 得到两者的交集
@@ -32,12 +33,13 @@ public class SelectStockByBothInfo {
 
     @Value("${stock.select.by.annual.finance.file}")
     private String annualFilepath;
-
     @Value("${stock.select.by.quarter.finance.file}")
     private String quarterFilepath;
-
-    @Value("${stock.select.by.both.file")
+    @Value("${stock.select.by.both.finance.file}")
     private String bothFilepath;
+
+    @Autowired
+    private StockDataService stockDataService;
 
     public void select() {
         try {
@@ -56,26 +58,8 @@ public class SelectStockByBothInfo {
                 quarterFilepath), new TypeReference<Set<SelectStockData>>() {
         });
 
-        Set<SelectStockData> finalData = new TreeSet<>(
-                new Comparator<SelectStockData>() {
-                    public int compare(SelectStockData d1, SelectStockData d2) {
-                        int result = -d1.revenueRaise.get(0).compareTo(
-                                d2.revenueRaise.get(0));
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(0).compareTo(
-                                    d2.profitRaise.get(0));
-                        }
-                        if (result == 0) {
-                            result = -d1.revenueRaise.get(1).compareTo(
-                                    d2.revenueRaise.get(1));
-                        }
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(1).compareTo(
-                                    d2.profitRaise.get(1));
-                        }
-                        return result;
-                    }
-                });
+        Set<SelectStockData> finalData = StockDataTools
+                .createSortedSetForStockData();
         quarterData.forEach(stock -> {
             if (annualData.contains(stock)) {
                 finalData.add(stock);
@@ -83,6 +67,6 @@ public class SelectStockByBothInfo {
         });
 
         // json格式
-        mapper.writeValue(new File(bothFilepath), finalData);
+        stockDataService.backupAndWriteNew(bothFilepath, finalData);
     }
 }

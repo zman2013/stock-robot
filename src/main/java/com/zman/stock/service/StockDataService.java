@@ -1,10 +1,12 @@
 package com.zman.stock.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +22,10 @@ public class StockDataService {
 
     private static final Logger logger = LoggerFactory
             .getLogger(StockDataService.class);
+    /**
+     * 备份文件的结尾，备份文件名=原文件名+"_backup"
+     */
+    public static final String backupExtension = "_backup";
 
     protected final static ObjectMapper mapper = new ObjectMapper();
 
@@ -107,6 +113,26 @@ public class StockDataService {
             logger.error("写入或更新持有股票信息出错,file: {}", holdStockInfoFile);
             throw e;
         }
+    }
+
+    /**
+     * 备份原始文件，并写入新文件
+     * 
+     * @throws IOException
+     */
+    public void backupAndWriteNew(String filePath, Object content)
+            throws IOException {
+        File srcFile = new File(filePath);
+        try {
+            FileUtils.copyFile(srcFile, new File(filePath + backupExtension));
+        } catch (FileNotFoundException e) {
+            logger.warn("文件没找到: {}", filePath);
+        } catch (IOException e) {
+            logger.error("备份文件出错,原文件名:{}", filePath);
+            throw e;
+        }
+
+        mapper.writeValue(srcFile, content);
     }
 
 }

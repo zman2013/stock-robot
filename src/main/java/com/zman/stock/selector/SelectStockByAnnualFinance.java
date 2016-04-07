@@ -1,6 +1,5 @@
 package com.zman.stock.selector;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -108,7 +107,7 @@ public class SelectStockByAnnualFinance {
         }
 
         // json格式
-        mapper.writeValue(new File(filepath), stockDataList);
+        stockDataService.backupAndWriteNew(filepath, stockDataList);
     }
 
 }

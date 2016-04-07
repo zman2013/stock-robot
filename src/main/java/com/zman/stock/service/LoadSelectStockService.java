@@ -2,8 +2,11 @@ package com.zman.stock.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,9 @@ import com.zman.stock.selector.SelectStockData;
  */
 @Service
 public class LoadSelectStockService {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(LoadSelectStockService.class);
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -43,11 +49,12 @@ public class LoadSelectStockService {
      * @throws IOException
      */
     public List<SelectStockData> loadQuarter() throws Exception {
-        List<SelectStockData> quarterDataList = mapper.readValue(new File(
-                quarterFilepath), new TypeReference<List<SelectStockData>>() {
-        });
+        return loadSelectedStockData(quarterFilepath);
+    }
 
-        return quarterDataList;
+    public List<SelectStockData> loadQuarterBackup() throws Exception {
+        return loadSelectedStockData(quarterFilepath
+                + StockDataService.backupExtension);
     }
 
     /**
@@ -60,11 +67,12 @@ public class LoadSelectStockService {
      * @throws IOException
      */
     public List<SelectStockData> loadAnnual() throws Exception {
-        List<SelectStockData> annualDataList = mapper.readValue(new File(
-                annualFilepath), new TypeReference<List<SelectStockData>>() {
-        });
+        return loadSelectedStockData(annualFilepath);
+    }
 
-        return annualDataList;
+    public List<SelectStockData> loadAnnualBackup() throws Exception {
+        return loadSelectedStockData(annualFilepath
+                + StockDataService.backupExtension);
     }
 
     /**
@@ -77,11 +85,26 @@ public class LoadSelectStockService {
      * @throws IOException
      */
     public List<SelectStockData> loadBoth() throws Exception {
-        List<SelectStockData> bothDataList = mapper.readValue(new File(
-                bothFilepath), new TypeReference<List<SelectStockData>>() {
-        });
-
-        return bothDataList;
+        return loadSelectedStockData(bothFilepath);
     }
 
+    public List<SelectStockData> loadBothBackup() throws Exception {
+        return loadSelectedStockData(bothFilepath
+                + StockDataService.backupExtension);
+    }
+
+    private List<SelectStockData> loadSelectedStockData(String filepath)
+            throws Exception {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            logger.warn("文件没找到:{}", filepath);
+            return Collections.emptyList();
+        }
+
+        List<SelectStockData> stockDataList = mapper.readValue(file,
+                new TypeReference<List<SelectStockData>>() {
+                });
+
+        return stockDataList;
+    }
 }

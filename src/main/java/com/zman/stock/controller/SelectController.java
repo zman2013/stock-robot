@@ -11,7 +11,7 @@ import com.zman.stock.selector.SelectStockData;
 import com.zman.stock.service.LoadSelectStockService;
 
 @Controller
-public class HomeController {
+public class SelectController {
 
     @Autowired
     private LoadSelectStockService loadSelectStockService;
