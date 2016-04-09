@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.service.StockDataService;
 import com.zman.stock.util.StockDataTools;
@@ -26,8 +25,6 @@ public class SelectStockByQuarterFinance {
 
     private static final Logger logger = LoggerFactory
             .getLogger(SelectStockByQuarterFinance.class);
-
-    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Value("${stock.select.by.quarter.finance.file}")
     private String filepath;
