@@ -13,6 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
+/**
+ * 未被使用
+ * 
+ * @author zman
+ *
+ */
 @Configuration
 @MapperScan("com.zman.stock.data.dao")
 public class MybatisConfig {

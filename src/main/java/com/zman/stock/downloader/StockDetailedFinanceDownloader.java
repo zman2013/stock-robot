@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,8 +40,8 @@ import com.zman.stock.service.StockDataService;
 @Service
 public class StockDetailedFinanceDownloader {
 
-    private static final Log logger = LogFactory
-            .getLog(StockDetailedFinanceDownloader.class);
+    private static final Logger logger = LoggerFactory
+            .getLogger(StockDetailedFinanceDownloader.class);
 
     /** 资产负债量表链接 */
     private static final String ZCFJUrl = "http://money.finance.sina.com.cn/corp/go.php/vDOWN_BalanceSheet/displaytype/4/stockid/{stockCode}/ctrl/all.phtml";
