@@ -5,15 +5,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<div>
-		<a th:href="@{/select/quarter}">季报</a> |<a th:href="@{/select/annual}">年报</a>
-		|<a th:href="@{/select/both}">交集</a> |<a
-			th:href="@{/stock/main-finance?code=000848}">主要财务</a>
-			| <a th:href="@{/hold/list}">买入股票</a>
-			| <a th:href="@{/scheduler/stock-analysis}">刷新财务基本信息</a>
-			| <a th:href="@{/scheduler/basic-info}">刷新股票基本信息</a>
-			| <a th:href="@{/scheduler/hold-stock}">刷新持股信息</a>
-	</div>
+	<div th:include="fragment/navigation-bar :: bar" ></div>
 
     <div style="margin-top:10px">买入</div>
 	<form th:attr="action=@{/hold/new}">

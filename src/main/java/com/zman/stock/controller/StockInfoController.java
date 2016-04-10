@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.zman.stock.data.domain.MainFinanceData;
 import com.zman.stock.data.domain.PEHistory;
@@ -33,7 +34,10 @@ public class StockInfoController {
     private StockFuQuanQianMonthPriceHistoryDownloader stockPriceHistoryDownloader;
 
     @RequestMapping("main-finance")
-    public String mainFinance(String code, Model model) throws Exception {
+    public String mainFinance(
+            String code,
+            @RequestParam(name = "pe-start-date", defaultValue = "20130101") int peStartDate,
+            Model model) throws Exception {
         List<StockFinanceBO> financeList = detailedFinanceDownloader
                 .findByStockList(Arrays.asList(code), "CashFlow");
         StockFinanceBO finance = financeList.get(0);
@@ -67,7 +71,8 @@ public class StockInfoController {
                 .download(code);
 
         PEHistory peHistory = computePEHistory(stockPriceList,
-                stockBasicInfo.code, stockBasicInfo.count, basicFinance);
+                stockBasicInfo.code, stockBasicInfo.count, basicFinance,
+                peStartDate);
 
         model.addAttribute("reportDateList", cashDateArray);
         model.addAttribute("dataList", mainFinanceDataList);
@@ -147,13 +152,14 @@ public class StockInfoController {
 
     private PEHistory computePEHistory(List<StockPrice> stockPriceList,
             String code, long count,
-            Map<String, Map<String, String>> basicFinance) {
+            Map<String, Map<String, String>> basicFinance, int peStartDate) {
 
         PEHistory peHistory = new PEHistory();
 
+        int i = 0;
         for (StockPrice stockPrice : stockPriceList) {
 
-            if (Integer.parseInt(stockPrice.date) < 20130101) {
+            if (Integer.parseInt(stockPrice.date) < peStartDate) {
                 continue;
             }
 
@@ -168,7 +174,11 @@ public class StockInfoController {
                 continue;
             }
 
-            peHistory.dateList.add(stockPrice.date);
+            if (i++ % 3 == 0) {
+                peHistory.dateList.add(stockPrice.date);
+            } else {
+                peHistory.dateList.add("");
+            }
             // 根据最大价格计算pe
             double pe = stockPrice.maxPrice * count / profit;
             pe = Double.parseDouble(String.format("%.2f", pe));

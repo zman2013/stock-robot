@@ -28,7 +28,7 @@ public class StockHoufuquanDailyPriceHistoryDownloader {
     @Autowired
     private StockDataService stockDataService;
 
-    private static final Pattern pattern = Pattern
+    public static final Pattern pattern = Pattern
             .compile("_(\\d+_\\d+_\\d+):\"(.*?)\",");
 
     public void download() throws Exception {
@@ -39,8 +39,7 @@ public class StockHoufuquanDailyPriceHistoryDownloader {
         // 计算股票指标
         for (HoldStockInfo stock : holdStockMap.values()) {
             // 下载
-            String content = downloadPriceAndOutput(houfuquanDailyPriceUrl,
-                    stock.code);
+            String content = downloadPriceHistory(stock.code);
 
             // 提取4大股价
             double[] priceArray = findPrices(content, stock.date);
@@ -82,6 +81,7 @@ public class StockHoufuquanDailyPriceHistoryDownloader {
         Matcher matcher = pattern.matcher(content);
         boolean first = true;
         while (matcher.find()) {
+            try {
             String date = matcher.group(1).replaceAll("_", "-");
             double price = Double.parseDouble(matcher.group(2));
 
@@ -100,17 +100,26 @@ public class StockHoufuquanDailyPriceHistoryDownloader {
                     first = false;
                 }
             }
+            } catch (Exception e) {
+            }
+
         }
         return priceArray;
     }
 
-    private String downloadPriceAndOutput(String baseUrl, String code) {
+    /**
+     * 下载股价历史数据
+     * 
+     * @param code
+     * @return
+     */
+    public String downloadPriceHistory(String code) {
 
         // 由于不知道股票是上证，还是深证，于是拼上sh或者sz，分别请求。忽略请求失败的。
 
         try {
             String content = DownloadUtil.downloadContent(String.format(
-                    baseUrl, "sz" + code));
+                    houfuquanDailyPriceUrl, "sz" + code));
             return content;
         } catch (DownloadFailException e) {
 
@@ -119,7 +128,7 @@ public class StockHoufuquanDailyPriceHistoryDownloader {
 
         try {
             String content = DownloadUtil.downloadContent(String.format(
-                    baseUrl, "sh" + code));
+                    houfuquanDailyPriceUrl, "sh" + code));
             return content;
         } catch (DownloadFailException e) {
         } catch (HttpStatusException e) {

@@ -16,4 +16,12 @@ public class StockBasicInfo {
 
     /** 价格 */
     public String price;
+
+    @Override
+    public String toString() {
+        return "StockBasicInfo [code=" + code + ", name=" + name + ", count="
+                + count + ", mainBusiness=" + mainBusiness + ", price=" + price
+                + "]";
+    }
+
 }
