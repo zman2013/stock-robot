@@ -11,10 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.thymeleaf.TemplateEngine;
 
+import com.zman.stock.data.domain.SelectedStockChangeInfo;
 import com.zman.stock.selector.SelectStockData;
 import com.zman.stock.service.EmailService;
 import com.zman.stock.service.LoadSelectStockService;
+import com.zman.stock.template.ThymeleafTemplateContext;
 
 @Service
 public class StockSelectMonitor {
@@ -26,37 +30,51 @@ public class StockSelectMonitor {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private TemplateEngine templateEngine;
+
     public void monitor() {
         // 检测按季度财务数据选股的变动
-        StringBuilder result = new StringBuilder();
+        SelectedStockChangeInfo quarterChangeInfo = null;
         try {
-            String tmp = compareChanges(loadSelectStockService.loadQuarter(),
+            quarterChangeInfo = compareChanges(
+                    loadSelectStockService.loadQuarter(),
                     loadSelectStockService.loadQuarterBackup());
-            result.append("[[[季度]]]").append(tmp);
         } catch (Exception e) {
             logger.error("对比季度选股变动时出错", e);
         }
         // 检测按年度财务数据选股的变动
+        SelectedStockChangeInfo annualChangeInfo = null;
         try {
-            String tmp = compareChanges(loadSelectStockService.loadAnnual(),
+            annualChangeInfo = compareChanges(
+                    loadSelectStockService.loadAnnual(),
                     loadSelectStockService.loadAnnualBackup());
-            result.append("[[[年度]]]").append(tmp);
         } catch (Exception e) {
             logger.error("对比年度选股变动时出错", e);
         }
         // 检测按交集（季度、年度）财务数据选股的变动
+        SelectedStockChangeInfo bothChangeInfo = null;
         try {
-            String tmp = compareChanges(loadSelectStockService.loadBoth(),
+            bothChangeInfo = compareChanges(loadSelectStockService.loadBoth(),
                     loadSelectStockService.loadBothBackup());
-            result.append("[[[交集]]]").append(tmp);
         } catch (Exception e) {
             logger.error("对比交集选股变动时出错", e);
         }
 
-        if (result.toString().length() > 24) {
+        if (quarterChangeInfo != null || annualChangeInfo != null
+                || bothChangeInfo != null) {
             try {
-                logger.info("筛选的股票有变动，请及时关注:\r\n{}", result.toString());
-                emailService.send("筛选的股票有变动，请及时关注", result.toString());
+                ThymeleafTemplateContext ctx = new ThymeleafTemplateContext();
+                ctx.setVariable("quarterChangeInfo", quarterChangeInfo);
+                ctx.setVariable("annualChangeInfo", annualChangeInfo);
+                ctx.setVariable("bothChangeInfo", bothChangeInfo);
+
+                String content = templateEngine.process(
+                        "email/stock-change-alarm",
+                        ctx);
+
+                logger.info("筛选的股票有变动，请及时关注");
+                emailService.send("筛选的股票有变动，请及时关注", content);
             } catch (MessagingException e) {
                 logger.error("筛选的股票有变动，发送邮件失败", e);
             }
@@ -71,7 +89,8 @@ public class StockSelectMonitor {
      * @param loadBothBackup
      * @return
      */
-    private String compareChanges(List<SelectStockData> newData,
+    private SelectedStockChangeInfo compareChanges(
+            List<SelectStockData> newData,
             List<SelectStockData> oldData) {
         Map<String, SelectStockData> newDataMap = new HashMap<>();
         for (SelectStockData stock : newData) {
@@ -99,27 +118,23 @@ public class StockSelectMonitor {
         return generateContent(newStockList, removedStockList);
     }
 
-    private String generateContent(List<SelectStockData> newStockList,
+    private SelectedStockChangeInfo generateContent(
+            List<SelectStockData> newStockList,
             List<SelectStockData> removedStockList) {
+        SelectedStockChangeInfo changeInfo = new SelectedStockChangeInfo();
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("新增的股票\r\n");
         for (SelectStockData stock : newStockList) {
-            sb.append(stock.code).append("\t");
-            sb.append(stock.name).append("\t");
-            sb.append(stock.mainBusiness).append("\r\n");
+            changeInfo.newStockList.add(stock);
         }
-        sb.append("移除的股票\r\n");
         for (SelectStockData stock : removedStockList) {
-            sb.append(stock.code).append("\t");
-            sb.append(stock.name).append("\t");
-            sb.append(stock.mainBusiness).append("\r\n");
+            changeInfo.removedStockList.add(stock);
         }
 
-        if (newStockList.isEmpty() && removedStockList.isEmpty()) {
-            return "";
+        if (CollectionUtils.isEmpty(changeInfo.newStockList)
+                && CollectionUtils.isEmpty(changeInfo.removedStockList)) {
+            return null;
         } else {
-            return sb.toString();
+            return changeInfo;
         }
     }
 }

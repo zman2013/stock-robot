@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <body>
+  
+    <div th:fragment="body (changeInfo)">
+    <table border="1" style="text-align: right" th:if="${changeInfo!=null}" th:object="${changeInfo}">
+        <tr>
+            <td rowspan="2" style="width:66px">名称</td>
+            <td rowspan="2">代码</td>
+            <td rowspan="2">pe</td>
+            <td th:if="*{newStockList.size()!=0}"
+                th:attr="colspan=*{newStockList.get(0).reportDateList.size()}">收入增长率</td>
+            <td th:if="*{newStockList.size()!=0}"
+                th:attr="colspan=*{newStockList.get(0).reportDateList.size()}">利润增长率</td>
+            <td th:if="*{newStockList.size()==0 and removedStockList.size()!=0}"
+                th:attr="colspan=*{removedStockList.get(0).reportDateList.size()}">收入增长率</td>
+            <td th:if="*{newStockList.size()==0 and removedStockList.size()!=0}"
+                th:attr="colspan=*{removedStockList.get(0).reportDateList.size()}">利润增长率</td>
+            <td rowspan="2" style="text-align:left">主营业务</td>
+        </tr>
+        <tr th:if="*{newStockList.size()!=0}">
+            <td th:each="reportDate : *{newStockList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+            <td th:each="reportDate : *{newStockList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+        </tr>
+        <tr th:if="*{newStockList.size()==0 and removedStockList.size()!=0}">
+            <td th:each="reportDate : *{removedStockList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+            <td th:each="reportDate : *{removedStockList.get(0).reportDateList}" th:text="${reportDate.replaceAll('[年报]','')}"></td>
+        </tr>
+        <tr><td>新增</td></tr>
+        <tr th:each="stockData : *{newStockList}">
+            <td><a th:text="${stockData.name}"></a></td>
+            <td th:text="${stockData.code}"></td>
+            <td th:text="${stockData.pe}"></td>
+            <td th:each="revenueRaise : ${stockData.revenueRaise}" th:text="${revenueRaise}" ></td>
+            <td th:each="profitRaise : ${stockData.profitRaise}" th:text="${profitRaise}" ></td>
+            <td style="text-align:left" th:text="${stockData.mainBusiness}"></td>
+        </tr>
+        <tr><td>消失</td></tr>
+        <tr th:each="stockData : *{removedStockList}">
+            <td th:text="${stockData.name}"></td>
+            <td th:text="${stockData.code}"></td>
+            <td th:text="${stockData.pe}"></td>
+            <td th:each="revenueRaise : ${stockData.revenueRaise}" th:text="${revenueRaise}" ></td>
+            <td th:each="profitRaise : ${stockData.profitRaise}" th:text="${profitRaise}" ></td>
+            <td style="text-align:left" th:text="${stockData.mainBusiness}"></td>
+        </tr>
+        </table>
+    </div>
+  
+  </body>
+  
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>筛选出的股票变动提醒</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>[[季度]]</div>
+    <div th:include="email/stock-change-alarm-body :: body (changeInfo=${quarterChangeInfo})" ></div>
+    <br/>
+    <div>[[年度]]</div>
+    <div th:include="email/stock-change-alarm-body :: body (changeInfo=${annualChangeInfo})" ></div>
+    <br/>
+    <div>[[交集]]</div>
+    <div th:include="email/stock-change-alarm-body :: body (changeInfo=${bothChangeInfo})" ></div>
+</body>
+</html>

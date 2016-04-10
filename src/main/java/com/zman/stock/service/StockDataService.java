@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -95,7 +96,7 @@ public class StockDataService {
                     javaType);
         } catch (FileNotFoundException e) {
             logger.warn("文件不存在，file{}", holdStockInfoFile);
-            holdStockInfoMap = Collections.emptyMap();
+            holdStockInfoMap = new HashMap<>();
         } catch (Exception e) {
             logger.error("从文件中读取持有的股票信息出错,file:{}", holdStockInfoFile);
             throw e;

@@ -19,7 +19,7 @@ public class SelectStockData {
     public String mainBusiness;
 
     /** 报告期 */
-    public List<String> reportDateList;
+    public List<String> reportDateList = new LinkedList<>();
     /** 报告期内净利润涨幅 */
     public List<Float> profitRaise = new LinkedList<>();
     /** 报告期内营业收入涨幅 */
