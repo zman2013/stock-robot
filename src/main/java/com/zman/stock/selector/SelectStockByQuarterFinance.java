@@ -61,9 +61,6 @@ public class SelectStockByQuarterFinance {
             stock.reportDateList = StockDataTools
                     .computeLast5QuaterReportDate();
             try {
-                /**
-                 * 当季的财务报告可能未发布，因此对第一个信息不进行检查
-                 */
                 for (int i = 0; i < stock.reportDateList.size(); i++) {
                     checkRaise(finance, stock.reportDateList.get(i), stock);
                 }
@@ -98,12 +95,26 @@ public class SelectStockByQuarterFinance {
      */
     public static void checkRaise(Map<String, Map<String, String>> finance,
             String item, SelectStockData stock) {
+        checkRaise(finance, item, stock, true);
+    }
+
+    /**
+     * 检查利润和收入增幅是否>20% 如果报告期数据不存在，就不进行检测，直接设置为10000
+     * 
+     * @param finance
+     * @param item
+     * @param stock
+     * @param isCheck
+     *            标志是否需要检查增幅
+     */
+    public static void checkRaise(Map<String, Map<String, String>> finance,
+            String item, SelectStockData stock, boolean isCheck) {
         if (finance.containsKey(item)) {
             // 检查利润增幅
             float profitRaise = Float.parseFloat(finance.get(item).get(
                     "净利润同比增长率"));
 
-            if (profitRaise < 20f) {
+            if (isCheck && profitRaise < 20f) {
                 throw new RuntimeException("profitRaise<20%," + stock.code
                         + ":" + item + ":" + profitRaise);
             }
@@ -112,7 +123,7 @@ public class SelectStockByQuarterFinance {
             float revenueRaise = Float.parseFloat(finance.get(item).get(
                     "收入同比增长率"));
 
-            if (revenueRaise < 20f) {
+            if (isCheck && revenueRaise < 20f) {
                 throw new RuntimeException("revenueRaise<20%," + stock.code
                         + ":" + item + ":" + revenueRaise);
             }

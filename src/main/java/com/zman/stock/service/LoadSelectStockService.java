@@ -38,6 +38,8 @@ public class LoadSelectStockService {
 
     @Value("${stock.select.by.both.finance.file}")
     private String bothFilepath;
+    @Value("${stock.hold.finance.file}")
+    private String stockHoldFinanceFile;
 
     /**
      * 加载按季度财务信息删选出的结果
@@ -93,7 +95,11 @@ public class LoadSelectStockService {
                 + StockDataService.backupExtension);
     }
 
-    private List<SelectStockData> loadSelectedStockData(String filepath)
+    public List<SelectStockData> loadHoldStockData() throws Exception {
+        return loadSelectedStockData(stockHoldFinanceFile);
+    }
+
+    public List<SelectStockData> loadSelectedStockData(String filepath)
             throws Exception {
         File file = new File(filepath);
         if (!file.exists()) {

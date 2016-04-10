@@ -1,6 +1,7 @@
 package com.zman.stock.controller;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zman.stock.data.domain.HoldStockInfo;
 import com.zman.stock.data.domain.StockBasicInfo;
+import com.zman.stock.selector.SelectStockData;
+import com.zman.stock.service.LoadSelectStockService;
 import com.zman.stock.service.StockDataService;
 
 @Controller
@@ -22,6 +25,8 @@ public class HoldStockController {
     private String holdStockInfoFile;
     @Autowired
     private StockDataService stockDataService;
+    @Autowired
+    private LoadSelectStockService loadSelectStockService;
 
     protected final static ObjectMapper mapper = new ObjectMapper();
 
@@ -43,6 +48,14 @@ public class HoldStockController {
         map.put(code, stock);
         mapper.writeValue(file, map);
         return "redirect:/hold/list";
+    }
+
+    @RequestMapping("finance-list")
+    public String finance(Model model) throws Exception {
+        List<SelectStockData> stockDataList = loadSelectStockService
+                .loadHoldStockData();
+        model.addAttribute("stockDataList", stockDataList);
+        return "select/select";
     }
 
 }

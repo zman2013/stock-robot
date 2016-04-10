@@ -1,10 +1,8 @@
 package com.zman.stock.selector;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,26 +45,8 @@ public class SelectStockByAnnualFinance {
         Collection<StockBasicInfo> allStock = stockDataService
                 .getAllStockBasicInfo().values();
 
-        Set<SelectStockData> stockDataList = new TreeSet<>(
-                new Comparator<SelectStockData>() {
-                    public int compare(SelectStockData d1, SelectStockData d2) {
-                        int result = -d1.revenueRaise.get(0).compareTo(
-                                d2.revenueRaise.get(0));
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(0).compareTo(
-                                    d2.profitRaise.get(0));
-                        }
-                        if (result == 0) {
-                            result = -d1.revenueRaise.get(1).compareTo(
-                                    d2.revenueRaise.get(1));
-                        }
-                        if (result == 0) {
-                            result = -d1.profitRaise.get(1).compareTo(
-                                    d2.profitRaise.get(1));
-                        }
-                        return result;
-                    }
-                });
+        Set<SelectStockData> stockDataList = StockDataTools
+                .createSortedSetForStockData();
 
         for (StockBasicInfo s : allStock) {
             SelectStockData stock = new SelectStockData();
