@@ -78,7 +78,7 @@ public class Scheduler {
         logger.info("开始下载股票总股数...");
         countDownloader.download();
         long usedTime = (System.currentTimeMillis() - starttime) / 1000;
-        logger.info("下载股票总股数失败，用时{}s", usedTime);
+        logger.info("下载股票总股数结束，用时{}s", usedTime);
 
         starttime = System.currentTimeMillis();
         logger.info("开始下载公司主营业务...");

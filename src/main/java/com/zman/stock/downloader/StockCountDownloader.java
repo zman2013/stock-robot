@@ -52,7 +52,7 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
                         .lastKey())) * 10000);
                 stock.count = count;
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("下载总股数失败，stock:" + stock.code, e);
             }
 
             if (processedCount++ % 100 == 0) {

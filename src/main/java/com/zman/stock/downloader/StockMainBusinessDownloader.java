@@ -49,7 +49,7 @@ public class StockMainBusinessDownloader extends AbstractLoopAllStockDownloader 
                 String mainBusinessInfo = (String) result.get(stock.code);
                 stock.mainBusiness = mainBusinessInfo;
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("下载主营业务失败，stock:" + stock.code, e);
             }
 
             if (processedCount++ % 100 == 0) {

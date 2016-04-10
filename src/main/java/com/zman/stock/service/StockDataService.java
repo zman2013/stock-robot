@@ -93,6 +93,9 @@ public class StockDataService {
                     Map.class, String.class, HoldStockInfo.class);
             holdStockInfoMap = mapper.readValue(new File(holdStockInfoFile),
                     javaType);
+        } catch (FileNotFoundException e) {
+            logger.warn("文件不存在，file{}", holdStockInfoFile);
+            holdStockInfoMap = Collections.emptyMap();
         } catch (Exception e) {
             logger.error("从文件中读取持有的股票信息出错,file:{}", holdStockInfoFile);
             throw e;
