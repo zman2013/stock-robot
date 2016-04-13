@@ -170,7 +170,6 @@ public class StockInfoController {
                 profit = StockDataTools.findProfit(stockPrice.date,
                         basicFinance);
             } catch (Exception e) {
-                System.out.println(stockPrice.date);
                 continue;
             }
 

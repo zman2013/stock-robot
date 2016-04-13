@@ -59,5 +59,6 @@ public class HoldStockMonitor {
         } else {
             logger.info("不需要进行股票操作，继续持有:{}", content);
         }
+
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.zman.stock.data.domain.StockBasicInfo;
+import com.zman.stock.exception.InvalidFinanceException;
 import com.zman.stock.service.StockDataService;
 import com.zman.stock.util.StockDataTools;
 
@@ -60,6 +61,9 @@ public class SelectStockByQuarterFinance {
                     .getBasicFinanceData(stock.code);
             stock.reportDateList = StockDataTools
                     .computeLast5QuaterReportDate();
+
+
+
             try {
                 for (int i = 0; i < stock.reportDateList.size(); i++) {
                     checkRaise(finance, stock.reportDateList.get(i), stock);
@@ -68,17 +72,22 @@ public class SelectStockByQuarterFinance {
                 if (finance.containsKey(stock.reportDateList.get(0))) {
                     stock.pe = StockDataTools.computePE(stock.price,
                             stock.count, stock.reportDateList.get(0), finance);
-                } else {
+                } else if (finance.containsKey(stock.reportDateList.get(1))) {
                     stock.pe = StockDataTools.computePE(stock.price,
                             stock.count, stock.reportDateList.get(1), finance);
+                } else {
+                    stock.pe = StockDataTools.computePE(stock.price,
+                            stock.count, stock.reportDateList.get(2), finance);
                 }
                 /** pe < 50 过滤 */
                 if (stock.pe < 50) {
                     stockDataList.add(stock);
                 }
-            } catch (Exception e) {
+            } catch (InvalidFinanceException e) {
                 // 不合格的股票
                 // e.printStackTrace();
+            } catch (Exception e) {
+                // logger.error("stock[" + stock.code + "] 筛选时遇到问题", e);
             }
         }
 
@@ -92,9 +101,10 @@ public class SelectStockByQuarterFinance {
      * @param finance
      * @param item
      * @param stock
+     * @throws InvalidFinanceException
      */
     public static void checkRaise(Map<String, Map<String, String>> finance,
-            String item, SelectStockData stock) {
+            String item, SelectStockData stock) throws InvalidFinanceException {
         checkRaise(finance, item, stock, true);
     }
 
@@ -106,16 +116,19 @@ public class SelectStockByQuarterFinance {
      * @param stock
      * @param isCheck
      *            标志是否需要检查增幅
+     * @throws InvalidFinanceException
      */
     public static void checkRaise(Map<String, Map<String, String>> finance,
-            String item, SelectStockData stock, boolean isCheck) {
+            String item, SelectStockData stock, boolean isCheck)
+            throws InvalidFinanceException {
         if (finance.containsKey(item)) {
             // 检查利润增幅
             float profitRaise = Float.parseFloat(finance.get(item).get(
                     "净利润同比增长率"));
 
             if (isCheck && profitRaise < 20f) {
-                throw new RuntimeException("profitRaise<20%," + stock.code
+                throw new InvalidFinanceException("profitRaise<20%,"
+                        + stock.code
                         + ":" + item + ":" + profitRaise);
             }
             stock.profitRaise.add(profitRaise);
@@ -124,7 +137,8 @@ public class SelectStockByQuarterFinance {
                     "收入同比增长率"));
 
             if (isCheck && revenueRaise < 20f) {
-                throw new RuntimeException("revenueRaise<20%," + stock.code
+                throw new InvalidFinanceException("revenueRaise<20%,"
+                        + stock.code
                         + ":" + item + ":" + revenueRaise);
             }
             stock.revenueRaise.add(revenueRaise);

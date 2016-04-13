@@ -33,6 +33,18 @@ public abstract class AbstractLoopAllStockDownloader {
     @Autowired
     protected StockDataService stockDataService;
 
+    public void download(String code) {
+        try {
+            // 下载页面,并处理
+            Map<String, ?> result = process(code);
+            // 保存信息
+            String filePath = getFilePath(code);
+            mapper.writeValue(new File(filePath), result);
+        } catch (Exception e) {
+            logger.error("", e);
+        }
+    }
+
     public void download() {
         // 加载所有股票基本信息
         Map<String, StockBasicInfo> allStock = stockDataService
@@ -42,15 +54,7 @@ public abstract class AbstractLoopAllStockDownloader {
         int processedCount = 0;
         for (StockBasicInfo stock : allStock.values()) {
 
-            try {
-                // 下载页面,并处理
-                Map<String, ?> result = process(stock.code);
-                // 保存信息
-                String filePath = getFilePath(stock.code);
-                mapper.writeValue(new File(filePath), result);
-            } catch (Exception e) {
-                logger.error("", e);
-            }
+            download(stock.code);
 
             if (processedCount++ % 100 == 0) {
                 System.out.println();

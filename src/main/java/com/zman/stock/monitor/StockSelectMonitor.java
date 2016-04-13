@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 import org.thymeleaf.TemplateEngine;
 
 import com.zman.stock.data.domain.SelectedStockChangeInfo;
+import com.zman.stock.selector.GenerateHoldStockFinanceInfo;
 import com.zman.stock.selector.SelectStockData;
 import com.zman.stock.service.EmailService;
 import com.zman.stock.service.LoadSelectStockService;
@@ -29,6 +30,9 @@ public class StockSelectMonitor {
     private LoadSelectStockService loadSelectStockService;
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private GenerateHoldStockFinanceInfo holdStockFinanceGenerator;
 
     @Autowired
     private TemplateEngine templateEngine;
@@ -91,6 +95,13 @@ public class StockSelectMonitor {
             }
         } else {
             logger.info("筛选的股票没有变动");
+        }
+
+        // 生成持股财务信息
+        try {
+            holdStockFinanceGenerator.generateFinanceInfo();
+        } catch (Exception e) {
+            logger.error("生成持股财务信息时出错", e);
         }
     }
 
