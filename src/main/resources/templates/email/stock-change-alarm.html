@@ -13,5 +13,7 @@
     <br/>
     <div>[[交集]]</div>
     <div th:include="email/stock-change-alarm-body :: body (changeInfo=${bothChangeInfo})" ></div>
+    <div>[[持股]]</div>
+    <div th:include="email/stock-change-alarm-body :: body (changeInfo=${holdChangeInfo})" ></div>
 </body>
 </html>

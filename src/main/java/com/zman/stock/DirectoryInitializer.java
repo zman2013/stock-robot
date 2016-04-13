@@ -22,6 +22,8 @@ public class DirectoryInitializer {
     private String basicFinanceDir;
     @Value("${stock.detailed.finance.dir}")
     private String detailedFinanceDir;
+    @Value("${stock.hold.dir}")
+    private String stockHoldDir;
 
     @PostConstruct
     public void init() {
@@ -34,6 +36,10 @@ public class DirectoryInitializer {
             file.mkdirs();
         }
         file = new File(detailedFinanceDir);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        file = new File(stockHoldDir);
         if (!file.exists()) {
             file.mkdirs();
         }

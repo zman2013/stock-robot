@@ -60,14 +60,25 @@ public class StockSelectMonitor {
         } catch (Exception e) {
             logger.error("对比交集选股变动时出错", e);
         }
+        // 检测持股的财务数据变动
+     // 检测按交集（季度、年度）财务数据选股的变动
+        SelectedStockChangeInfo holdChangeInfo = null;
+        try {
+            holdChangeInfo = compareChanges(
+                    loadSelectStockService.loadHoldStockData(),
+                    loadSelectStockService.loadHoldBackup());
+        } catch (Exception e) {
+            logger.error("对比交集选股变动时出错", e);
+        }
 
         if (quarterChangeInfo != null || annualChangeInfo != null
-                || bothChangeInfo != null) {
+                || bothChangeInfo != null || holdChangeInfo != null) {
             try {
                 ThymeleafTemplateContext ctx = new ThymeleafTemplateContext();
                 ctx.setVariable("quarterChangeInfo", quarterChangeInfo);
                 ctx.setVariable("annualChangeInfo", annualChangeInfo);
                 ctx.setVariable("bothChangeInfo", bothChangeInfo);
+                ctx.setVariable("holdChangeInfo", holdChangeInfo);
 
                 String content = templateEngine.process(
                         "email/stock-change-alarm",

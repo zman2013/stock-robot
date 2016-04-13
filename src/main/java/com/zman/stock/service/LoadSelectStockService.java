@@ -99,6 +99,11 @@ public class LoadSelectStockService {
         return loadSelectedStockData(stockHoldFinanceFile);
     }
 
+    public List<SelectStockData> loadHoldBackup() throws Exception {
+        return loadSelectedStockData(stockHoldFinanceFile
+                + StockDataService.backupExtension);
+    }
+
     public List<SelectStockData> loadSelectedStockData(String filepath)
             throws Exception {
         File file = new File(filepath);
