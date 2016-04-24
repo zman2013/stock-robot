@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.zman.stock.downloader.StockBasicFinanceDownloader;
 import com.zman.stock.downloader.StockBasicInfoDownloader;
 import com.zman.stock.downloader.StockCountDownloader;
+import com.zman.stock.downloader.StockFinanceForecastDownloader;
 import com.zman.stock.downloader.StockHoufuquanDailyPriceHistoryDownloader;
 import com.zman.stock.downloader.StockMainBusinessDownloader;
 import com.zman.stock.monitor.HoldStockMonitor;
@@ -42,7 +43,8 @@ public class Scheduler {
     private StockCountDownloader countDownloader;
     @Autowired
     private StockMainBusinessDownloader mainBusinessDownloader;
-
+    @Autowired
+    private StockFinanceForecastDownloader financeForecastDownloader;
     @Autowired
     private StockBasicFinanceDownloader basicFinanceDownloader;
     @Autowired
@@ -115,6 +117,12 @@ public class Scheduler {
         bothSelector.select();
         usedTime = (System.currentTimeMillis() - starttime) / 1000;
         logger.info("筛选全优股票结束，用时{}s", usedTime);
+
+        starttime = System.currentTimeMillis();
+        logger.info("开始下载财务预告...");
+        financeForecastDownloader.download();
+        usedTime = (System.currentTimeMillis() - starttime) / 1000;
+        logger.info("下载财务预告结束，用时{}s", usedTime);
 
         starttime = System.currentTimeMillis();
         logger.info("开始检查优秀股票是否有变动...");

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zman.stock.data.domain.FinanceForecast;
 import com.zman.stock.data.domain.HoldStockInfo;
 import com.zman.stock.data.domain.StockBasicInfo;
 
@@ -38,6 +39,9 @@ public class StockDataService {
 
     @Value("${stock.hold.info.file}")
     private String holdStockInfoFile;
+
+    @Value("${finance-forecast-file-path}")
+    private String financeForecastFilepath;
 
     /**
      * 读取文件获得所有股票基本信息
@@ -137,6 +141,24 @@ public class StockDataService {
         }
 
         mapper.writeValue(srcFile, content);
+    }
+
+    /**
+     * 输出财务预告到文件
+     */
+    public void writeFinanceForecast(Map<String, FinanceForecast> value)
+            throws IOException {
+        mapper.writeValue(new File(financeForecastFilepath), value);
+    }
+
+    /**
+     * 加载财务预告信息
+     */
+    public Map<String, FinanceForecast> loadFinanceForecast()
+            throws IOException {
+        JavaType javaType = mapper.getTypeFactory().constructMapType(Map.class,
+                String.class, FinanceForecast.class);
+        return mapper.readValue(new File(financeForecastFilepath), javaType);
     }
 
 }

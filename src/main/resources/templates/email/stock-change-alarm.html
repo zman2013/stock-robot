@@ -15,5 +15,22 @@
     <div th:include="email/stock-change-alarm-body :: body (changeInfo=${bothChangeInfo})" ></div>
     <div>[[持股]]</div>
     <div th:include="email/stock-change-alarm-body :: body (changeInfo=${holdChangeInfo})" ></div>
+    <div>[[持股的业绩预告]]</div>
+    <table border="1" style="text-align:right">
+       <tr>
+           <td>名称</td>
+           <td>代码</td>
+           <td>类型</td>
+           <td>内容</td>
+           <td>幅度</td>
+       </tr>
+       <tr th:each="stockData :${holdStockFinanceForecast.values()}">
+           <td th:text="${stockData.name}"></td>
+           <td th:text="${stockData.code}"></td>
+           <td th:text="${stockData.type}"></td>
+           <td th:text="${stockData.content}"></td>
+           <td th:text="${stockData.raisePercentage}"></td>
+       </tr>
+    </table>
 </body>
 </html>

@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.thymeleaf.TemplateEngine;
 
+import com.zman.stock.data.domain.FinanceForecast;
 import com.zman.stock.data.domain.SelectedStockChangeInfo;
 import com.zman.stock.selector.GenerateHoldStockFinanceInfo;
 import com.zman.stock.selector.SelectStockData;
 import com.zman.stock.service.EmailService;
 import com.zman.stock.service.LoadSelectStockService;
+import com.zman.stock.service.StockDataService;
 import com.zman.stock.template.ThymeleafTemplateContext;
 
 @Service
@@ -30,7 +32,8 @@ public class StockSelectMonitor {
     private LoadSelectStockService loadSelectStockService;
     @Autowired
     private EmailService emailService;
-
+    @Autowired
+    private StockDataService stockDataService;
     @Autowired
     private GenerateHoldStockFinanceInfo holdStockFinanceGenerator;
 
@@ -74,7 +77,10 @@ public class StockSelectMonitor {
         } catch (Exception e) {
             logger.error("对比交集选股变动时出错", e);
         }
+        // 检查持有的股票是否有新的业绩预告
+        Map<String, FinanceForecast> financeForecastMap = checkFinanceForecast();
 
+        // 生成邮件，并发送
         if (quarterChangeInfo != null || annualChangeInfo != null
                 || bothChangeInfo != null || holdChangeInfo != null) {
             try {
@@ -83,6 +89,7 @@ public class StockSelectMonitor {
                 ctx.setVariable("annualChangeInfo", annualChangeInfo);
                 ctx.setVariable("bothChangeInfo", bothChangeInfo);
                 ctx.setVariable("holdChangeInfo", holdChangeInfo);
+                ctx.setVariable("holdStockFinanceForecast", financeForecastMap);
 
                 String content = templateEngine.process(
                         "email/stock-change-alarm",
@@ -103,6 +110,28 @@ public class StockSelectMonitor {
         } catch (Exception e) {
             logger.error("生成持股财务信息时出错", e);
         }
+    }
+
+    /**
+     * 检查持有的股票是否有财务预告
+     * 
+     * @return
+     */
+    private Map<String,FinanceForecast> checkFinanceForecast(){
+        Map<String, FinanceForecast> result = new HashMap<>();
+
+        try {
+            Map<String, FinanceForecast> map = stockDataService
+                    .loadFinanceForecast();
+            loadSelectStockService.loadHoldStockData().forEach(stock -> {
+                if (map.containsKey(stock.code)) {
+                    result.put(stock.code, map.get(stock.code));
+                }
+            });
+        } catch (Exception e) {
+            logger.error("检查财务预告出错", e);
+        }
+        return result;
     }
 
     /**
