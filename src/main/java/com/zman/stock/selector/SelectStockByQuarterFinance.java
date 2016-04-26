@@ -50,6 +50,7 @@ public class SelectStockByQuarterFinance {
                 .createSortedSetForStockData();
 
         for (StockBasicInfo s : allStock) {
+
             SelectStockData stock = new SelectStockData();
             stock.code = s.code;
             stock.price = Double.parseDouble(s.price);
@@ -57,14 +58,12 @@ public class SelectStockByQuarterFinance {
             stock.mainBusiness = s.mainBusiness;
             stock.count = s.count;
 
-            Map<String, Map<String, String>> finance = stockDataService
-                    .getBasicFinanceData(stock.code);
-            stock.reportDateList = StockDataTools
-                    .computeLast5QuaterReportDate();
-
-
-
             try {
+                Map<String, Map<String, String>> finance = stockDataService
+                        .getBasicFinanceData(stock.code);
+                stock.reportDateList = StockDataTools
+                        .computeLast5QuaterReportDate();
+
                 for (int i = 0; i < stock.reportDateList.size(); i++) {
                     checkRaise(finance, stock.reportDateList.get(i), stock);
                 }

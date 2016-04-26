@@ -19,6 +19,6 @@ public class StockBasicFinanceDownloaderTest {
 
     @Test
     public void download() {
-        downloader.download("300072");
+        downloader.download("002572");
     }
 }
