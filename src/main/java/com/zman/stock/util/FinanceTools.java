@@ -116,7 +116,7 @@ public class FinanceTools {
     }
 
     /**
-     * 计算同比增长率
+     * 计算同比增长率（百分比）
      * @param finance
      * @param item
      * @param date
@@ -130,14 +130,14 @@ public class FinanceTools {
             Float lastYearValue = getLastYearFinance(finance, item, date); //去年同期数据
             if( currentValue != null && lastYearValue != null ){
                 float ratio = (currentValue-lastYearValue)/lastYearValue;
-                result = String.format("%.2f", ratio);
+                result = String.format("%.2f", ratio*100);
             }
         }
         return result;
     }
 
     /**
-     * 计算环比增长率
+     * 计算环比增长率（百分比）
      * @param finance
      * @param item
      * @param date
@@ -151,7 +151,7 @@ public class FinanceTools {
             Float lastSeasonValue = getOneLastSeasonFinance(finance, item, date); //上一季度单季数据
             if( currentValue != null && lastSeasonValue != null ){
                 float ratio = (currentValue-lastSeasonValue)/lastSeasonValue;
-                result = String.format("%.2f", ratio);
+                result = String.format("%.2f", ratio*100);
             }
         }
         return result;
