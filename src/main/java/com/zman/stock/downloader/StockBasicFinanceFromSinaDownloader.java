@@ -49,23 +49,25 @@ public class StockBasicFinanceFromSinaDownloader extends AbstractLoopAllStockDow
             List<StockFinanceBO> stockFinanceBOList = detailedFinanceDownloader.findByStockList(Arrays.asList(code), "ProfitStatement");
             stockFinanceBOList.forEach( f -> {
                 Map<String,Map<String,Float>> data = f.getData();
-                Map<String,Float> revenueMap = data.get("一、营业总收入");
-                Map<String,Float> profitMap = data.get("四、净利润");
+
+                List<String> revenueItemList = Arrays.asList("一、营业总收入","一、营业收入");
+                List<String> profitItemList = Arrays.asList("四、净利润","四、利润总额");
+                Map<String,Float> revenueMap = FinanceTools.getFinance(data, revenueItemList);
+                Map<String,Float> profitMap = FinanceTools.getFinance(data, profitItemList);
                 Set<String> dateSet = revenueMap.keySet();
-                String revenueItem = "一、营业总收入";
-                String profitItem = "四、净利润";
+
                 dateSet.forEach( date -> {
                     try {
                         String version = FinanceTools.convertToVersion(date);
 
                         //计算收入数据
                         Float currentRevenue = revenueMap.get(date); //当期收入
-                        String revenueYearGrowth = FinanceTools.computeYearGrowth(data, revenueItem, date); //同比增长率
-                        String revenueSeasonGrowth = FinanceTools.computeSeasonGrowth(data, revenueItem, date); //环比增长率
+                        String revenueYearGrowth = FinanceTools.computeYearGrowth(data, revenueItemList, date); //同比增长率
+                        String revenueSeasonGrowth = FinanceTools.computeSeasonGrowth(data, revenueItemList, date); //环比增长率
                         //计算净利润数据
                         Float currentProfit = profitMap.get(date); //当期净利润
-                        String profitYearGrowth = FinanceTools.computeYearGrowth(data, profitItem, date); //同比增长
-                        String profitSeasonGrowth = FinanceTools.computeSeasonGrowth(data, profitItem, date); //环比增长
+                        String profitYearGrowth = FinanceTools.computeYearGrowth(data, profitItemList, date); //同比增长
+                        String profitSeasonGrowth = FinanceTools.computeSeasonGrowth(data, profitItemList, date); //环比增长
 
 
                         Map<String, String> tmp = new HashMap<>();
