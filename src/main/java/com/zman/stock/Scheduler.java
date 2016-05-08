@@ -2,18 +2,13 @@ package com.zman.stock;
 
 import java.io.IOException;
 
+import com.zman.stock.downloader.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.zman.stock.downloader.StockBasicFinanceDownloader;
-import com.zman.stock.downloader.StockBasicInfoDownloader;
-import com.zman.stock.downloader.StockCountDownloader;
-import com.zman.stock.downloader.StockFinanceForecastDownloader;
-import com.zman.stock.downloader.StockHoufuquanDailyPriceHistoryDownloader;
-import com.zman.stock.downloader.StockMainBusinessDownloader;
 import com.zman.stock.monitor.HoldStockMonitor;
 import com.zman.stock.monitor.StockSelectMonitor;
 import com.zman.stock.selector.SelectStockByAnnualFinance;
@@ -46,7 +41,7 @@ public class Scheduler {
     @Autowired
     private StockFinanceForecastDownloader financeForecastDownloader;
     @Autowired
-    private StockBasicFinanceDownloader basicFinanceDownloader;
+    private StockBasicFinanceFromSinaDownloader stockBasicFinanceFromSinaDownloader;
     @Autowired
     private SelectStockByQuarterFinance quarterSelector;
     @Autowired
@@ -96,7 +91,7 @@ public class Scheduler {
     public void downloadAndAnalysisStockFinance() {
         long starttime = System.currentTimeMillis();
         logger.info("开始下载股票基本财务信息...");
-        basicFinanceDownloader.download();
+        stockBasicFinanceFromSinaDownloader.download();
         long usedTime = (System.currentTimeMillis() - starttime) / 1000;
         logger.info("下载基本财务信息结束，用时{}s", usedTime);
 

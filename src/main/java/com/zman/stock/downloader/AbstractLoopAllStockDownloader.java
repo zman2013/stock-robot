@@ -37,9 +37,11 @@ public abstract class AbstractLoopAllStockDownloader {
         try {
             // 下载页面,并处理
             Map<String, ?> result = process(code);
-            // 保存信息
-            String filePath = getFilePath(code);
-            mapper.writeValue(new File(filePath), result);
+            if( !result.isEmpty() ) {
+                // 保存信息
+                String filePath = getFilePath(code);
+                mapper.writeValue(new File(filePath), result);
+            }
         } catch (Exception e) {
             logger.error("", e);
         }

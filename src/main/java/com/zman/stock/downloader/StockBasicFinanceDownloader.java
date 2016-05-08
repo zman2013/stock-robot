@@ -14,11 +14,14 @@ import com.zman.stock.util.DownloadUtil;
 
 /**
  * 下载股票的基本财务信息
- * 
+ * 此数据来自同花顺
+ *
+ * !!!同花顺信息更新不及时，废弃!!!
  * @author zman
  *
  */
 @Service
+@Deprecated
 public class StockBasicFinanceDownloader extends AbstractLoopAllStockDownloader {
 
     @Value("${stock.basic.finance.url}")
