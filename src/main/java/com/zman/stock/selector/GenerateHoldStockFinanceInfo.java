@@ -43,6 +43,10 @@ public class GenerateHoldStockFinanceInfo {
         for (Entry<String, HoldStockInfo> entry : stockMap.entrySet()) {
             String code = entry.getKey();
             StockBasicInfo s = allStock.get(code);
+            if( s == null ){
+                logger.error("AllStockBasicInfo 中不存在股票:{}", code);
+                continue;
+            }
 
             SelectStockData stock = new SelectStockData();
             stock.code = s.code;

@@ -34,8 +34,6 @@ public class StockSelectMonitor {
     private EmailService emailService;
     @Autowired
     private StockDataService stockDataService;
-    @Autowired
-    private GenerateHoldStockFinanceInfo holdStockFinanceGenerator;
 
     @Autowired
     private TemplateEngine templateEngine;
@@ -104,12 +102,7 @@ public class StockSelectMonitor {
             logger.info("筛选的股票没有变动");
         }
 
-        // 生成持股财务信息
-        try {
-            holdStockFinanceGenerator.generateFinanceInfo();
-        } catch (Exception e) {
-            logger.error("生成持股财务信息时出错", e);
-        }
+
     }
 
     /**
@@ -136,8 +129,6 @@ public class StockSelectMonitor {
 
     /**
      * 
-     * @param loadQuarter
-     * @param loadBothBackup
      * @return
      */
     private SelectedStockChangeInfo compareChanges(

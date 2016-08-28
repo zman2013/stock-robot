@@ -3,6 +3,7 @@ package com.zman.stock;
 import java.io.IOException;
 
 import com.zman.stock.downloader.*;
+import com.zman.stock.selector.GenerateHoldStockFinanceInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,8 @@ public class Scheduler {
     private SelectStockByAnnualFinance annualSelector;
     @Autowired
     private SelectStockByBothInfo bothSelector;
+    @Autowired
+    private GenerateHoldStockFinanceInfo holdStockFinanceGenerator;
     @Autowired
     private StockSelectMonitor selectMonitor;
 
@@ -118,6 +121,16 @@ public class Scheduler {
         financeForecastDownloader.download();
         usedTime = (System.currentTimeMillis() - starttime) / 1000;
         logger.info("下载财务预告结束，用时{}s", usedTime);
+
+        // 生成持股财务信息
+        starttime = System.currentTimeMillis();
+        try {
+            holdStockFinanceGenerator.generateFinanceInfo();
+        } catch (Exception e) {
+            logger.error("生成持股财务信息时出错", e);
+        }
+        usedTime = (System.currentTimeMillis() - starttime)/1000;
+        logger.info("生成持股财务报告，用时{}s", usedTime);
 
         starttime = System.currentTimeMillis();
         logger.info("开始检查优秀股票是否有变动...");

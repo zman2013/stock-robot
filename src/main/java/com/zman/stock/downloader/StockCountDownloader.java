@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.zman.stock.data.domain.HoldStockInfo;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
@@ -38,6 +39,8 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
         // 加载所有股票基本信息
         Map<String, StockBasicInfo> allStock = stockDataService
                 .getAllStockBasicInfo();
+        // 加载所有持有的股票，有可能所有的股票基本信息中没有包含持有的股票（因为网站的数据可能不全）
+        addHoldStockInfo(allStock);
 
         // 遍历并处理所有股票
         int processedCount = 0;
@@ -67,6 +70,31 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
             mapper.writeValue(new File(stockBasicInfoFile), allStock);
         } catch (IOException e) {
             logger.error("写入股票基本信息文件时出错", e);
+        }
+    }
+
+    /**
+     * 尝试插入持有的股票信息到所有股票信息中，防止所有股票不包含持有的股票信息
+     * 因为网站的数据可能不全
+     * @param allStock
+     */
+    private void addHoldStockInfo(Map<String, StockBasicInfo> allStock) {
+        try {
+            Map<String, HoldStockInfo> stockMap = stockDataService
+                    .loadHoldStockInfo();
+            for( Map.Entry<String,HoldStockInfo> entry : stockMap.entrySet() ){
+                String code = entry.getKey();
+                String name = entry.getValue().name;
+                if( !allStock.containsKey(code) ){
+                    StockBasicInfo stock = new StockBasicInfo();
+                    stock.code = code;
+                    stock.name = name;
+                    stock.price = "0";
+                    allStock.put(code, stock);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("加载持有的股票信息出错",e);
         }
     }
 
