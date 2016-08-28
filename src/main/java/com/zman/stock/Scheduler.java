@@ -34,7 +34,7 @@ public class Scheduler {
             .getLogger(Scheduler.class);
 
     @Autowired
-    private StockBasicInfoDownloader basicInfoDownloader;
+    private StockBasicInfoSinaDownloader StockBasicInfoSinaDownloader;
     @Autowired
     private StockCountDownloader countDownloader;
     @Autowired
@@ -67,7 +67,7 @@ public class Scheduler {
         long starttime = System.currentTimeMillis();
         logger.info("开始下载股票基本信息...");
         try {
-            basicInfoDownloader.download();
+            StockBasicInfoSinaDownloader.download();
             long usedTime = (System.currentTimeMillis() - starttime) / 1000;
             logger.info("下载基本信息结束，用时{}s", usedTime);
         } catch (IOException e) {

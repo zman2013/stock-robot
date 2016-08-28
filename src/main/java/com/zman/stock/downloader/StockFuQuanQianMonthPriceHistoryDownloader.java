@@ -17,7 +17,7 @@ import com.zman.stock.util.DownloadUtil;
 
 /**
  * 获得复权前的股票价格，月级数据（最高价、最低价），用于计算pe
- * 
+ * 数据源：同花顺
  * @author zman
  *
  */

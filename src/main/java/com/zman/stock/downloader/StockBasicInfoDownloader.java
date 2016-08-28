@@ -22,10 +22,12 @@ import com.zman.stock.util.DownloadUtil;
 
 /**
  * 下载所有股票的编号和名称
+ * 数据源：同花顺
  * 
  * @author zman
  *
  */
+@Deprecated
 @Service
 public class StockBasicInfoDownloader {
     private static final Logger logger = LoggerFactory
