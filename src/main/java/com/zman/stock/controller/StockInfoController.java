@@ -79,7 +79,7 @@ public class StockInfoController {
         // 获得股票的前复权月级价格历史数据
         logger.info("start downloading price history");
         List<StockPrice> stockPriceList = stockPriceHistoryDownloader
-                .download(code);
+                .download(code,Float.parseFloat(stockBasicInfo.price));
         logger.info("downloaded price history");
 
         PEHistory peHistory = computePEHistory(stockPriceList,

@@ -135,13 +135,13 @@ public class StockDataTools {
 
         double jingzichan = 0d;
         if (day < 331) {
-            financeDate = (year - 1) + "-12-31";
+            financeDate = (year - 1)%100 + "12";
         } else if (day < 630) {
-            financeDate = year + "-09-30";
+            financeDate = year%100 + "09";
         } else if (day < 930) {
-            financeDate = year + "-06-30";
+            financeDate = year%100 + "06";
         } else {
-            financeDate = year + "-03-31";
+            financeDate = year%100 + "03";
         }
 
         jingzichan = balanceFinance.getData().get("归属于母公司股东权益合计").get(financeDate);

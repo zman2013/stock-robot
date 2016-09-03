@@ -17,8 +17,10 @@ public class StockFinanceBO{
             return arg0.compareTo( arg1 );
         }
     } );
-    
-    /** {itemName:{Date:value},...} */
+
+    /** {itemName:{Date:value},...}
+     * "归属于母公司股东权益合计" -> { "1512" -> 1000 } ....
+     */
     private Map<String, Map<String, Float>> data = new HashMap<>();
     
     
