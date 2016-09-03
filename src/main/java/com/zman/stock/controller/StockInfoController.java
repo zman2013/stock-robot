@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +28,8 @@ import com.zman.stock.util.StockDataTools;
 @RequestMapping("/stock")
 public class StockInfoController {
 
+    private final Logger logger = LoggerFactory.getLogger(StockInfoController.class);
+
     @Autowired
     private StockDetailedFinanceDownloader detailedFinanceDownloader;
     @Autowired
@@ -38,8 +42,14 @@ public class StockInfoController {
             String code,
             @RequestParam(name = "pe-start-date", defaultValue = "20130101") int peStartDate,
             Model model) throws Exception {
+        logger.info("start...");
         List<StockFinanceBO> financeList = detailedFinanceDownloader
                 .findByStockList(Arrays.asList(code), "CashFlow");
+        logger.info("downloaded CashFlow");
+        List<StockFinanceBO> balanceFinanceList = detailedFinanceDownloader.findByStockList(Arrays.asList(code),"BalanceSheet");
+        logger.info("downloaded balanceFinance");
+        List<StockFinanceBO> profitFinanceList = detailedFinanceDownloader.findByStockList(Arrays.asList(code),"ProfitStatement");
+        logger.info("downloaded profit");
         StockFinanceBO finance = financeList.get(0);
         Map<String, Map<String, String>> basicFinance = stockDataService
                 .getBasicFinanceData(code);
@@ -67,11 +77,17 @@ public class StockInfoController {
                 cashDateArray, finance));
 
         // 获得股票的前复权月级价格历史数据
+        logger.info("start downloading price history");
         List<StockPrice> stockPriceList = stockPriceHistoryDownloader
                 .download(code);
+        logger.info("downloaded price history");
 
         PEHistory peHistory = computePEHistory(stockPriceList,
                 stockBasicInfo.code, stockBasicInfo.count, basicFinance,
+                peStartDate);
+
+        PEHistory pbHistory = computePBHistory(stockPriceList,
+                stockBasicInfo.count, balanceFinanceList.get(0), //只有一个股票
                 peStartDate);
 
         model.addAttribute("reportDateList", cashDateArray);
@@ -79,8 +95,47 @@ public class StockInfoController {
         model.addAttribute("code", code);
         model.addAttribute("name", finance.getName());
         model.addAttribute("peHistory", peHistory);
+        model.addAttribute("pbHistory", pbHistory);
 
         return "stock/main-finance";
+    }
+
+    private PEHistory computePBHistory(List<StockPrice> stockPriceList, long count, StockFinanceBO balanceFinance, int peStartDate) {
+        PEHistory pbHistory = new PEHistory();
+
+        int i = 0;
+        for (StockPrice stockPrice : stockPriceList) {
+
+            if (Integer.parseInt(stockPrice.date) < peStartDate) {
+                continue;
+            }
+
+            // 获取当前日期的净资产
+
+            double jingzichan = 0;
+            try {
+                //日期转换，转为上一季度末yyyy-03-31，yyyy-60-30、、、
+                jingzichan = StockDataTools.findJingzichan(stockPrice.date, balanceFinance);
+            } catch (Exception e) {
+                continue;
+            }
+
+            if (i++ % 3 == 0) {
+                pbHistory.dateList.add(stockPrice.date);
+            } else {
+                pbHistory.dateList.add("");
+            }
+            // 根据最大价格计算pe
+            double pb = stockPrice.maxPrice * count / jingzichan;
+            pb = Double.parseDouble(String.format("%.2f", pb));
+            pbHistory.maxPeList.add((float) pb);
+            // 根据最小价格计算pe
+            pb = stockPrice.minPrice * count / jingzichan;
+            pb = Double.parseDouble(String.format("%.2f", pb));
+            pbHistory.minPeList.add((float) pb);
+        }
+
+        return pbHistory;
     }
 
     /**

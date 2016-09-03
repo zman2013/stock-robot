@@ -65,8 +65,8 @@ public class StockSelectMonitor {
         } catch (Exception e) {
             logger.error("对比交集选股变动时出错", e);
         }
+
         // 检测持股的财务数据变动
-     // 检测按交集（季度、年度）财务数据选股的变动
         SelectedStockChangeInfo holdChangeInfo = null;
         try {
             holdChangeInfo = compareChanges(
@@ -128,7 +128,7 @@ public class StockSelectMonitor {
     }
 
     /**
-     * 
+     * 检查新增和消失的股票
      * @return
      */
     private SelectedStockChangeInfo compareChanges(
@@ -147,6 +147,45 @@ public class StockSelectMonitor {
         for (SelectStockData stock : newData) {
             if (!oldDataMap.containsKey(stock.code)) {
                 newStockList.add(stock);
+            }
+        }
+        // 获得消失的股票
+        List<SelectStockData> removedStockList = new LinkedList<>();
+        for (SelectStockData stock : oldData) {
+            if (!newDataMap.containsKey(stock.code)) {
+                removedStockList.add(stock);
+            }
+        }
+        // 生成数据
+        return generateContent(newStockList, removedStockList);
+    }
+
+    private SelectedStockChangeInfo compareChanges2(
+            List<SelectStockData> newData,
+            List<SelectStockData> oldData) {
+        Map<String, SelectStockData> newDataMap = new HashMap<>();
+        for (SelectStockData stock : newData) {
+            newDataMap.put(stock.code, stock);
+        }
+        Map<String, SelectStockData> oldDataMap = new HashMap<>();
+        for (SelectStockData stock : oldData) {
+            oldDataMap.put(stock.code, stock);
+        }
+        // 获得新增（或财务数据改变）的股票
+        List<SelectStockData> newStockList = new LinkedList<>();
+        for (SelectStockData stock : newData) {
+            if (!oldDataMap.containsKey(stock.code)) {
+                newStockList.add(stock);
+            }else{
+                //只比较当前季度和上一季度即可（经常到了四月上一年度的财报还没发布，因此需要比较前面两个季度的数据），之前的那些季度数据早就比较过了
+                for( int i = 0; i < 2; i ++ ){
+                    SelectStockData oldStockInfo = oldDataMap.get(stock.code);
+                    Float newProfitRaise = stock.profitRaise.get(i);
+                    Float oldProfitRaise = oldStockInfo.profitRaise.get(i);
+                    if( !newProfitRaise.equals(oldProfitRaise) ){
+                        newStockList.add(stock);
+                    }
+                }
             }
         }
         // 获得消失的股票

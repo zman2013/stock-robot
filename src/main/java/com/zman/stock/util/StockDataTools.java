@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.zman.stock.data.domain.StockFinanceBO;
 import org.joda.time.DateTime;
 
 import com.zman.stock.selector.SelectStockData;
@@ -77,7 +78,7 @@ public class StockDataTools {
     /**
      * 获得指定日期之前四个季度的净利润
      * 
-     * @param date
+     * @param date yyyyMMdd
      * @param financeMap
      * @return
      */
@@ -115,6 +116,37 @@ public class StockDataTools {
         profit = StockDataTools.findLastYearNetProfit(item, financeMap);
 
         return profit;
+    }
+
+    /**
+     * 获得截止指定日期上一个季度的净资产
+     *
+     * @param date yyyyMMdd
+     * @param balanceFinance data   {itemName:{Date:value},...}
+     * @return
+     */
+    public static double findJingzichan(String date,
+                                        StockFinanceBO balanceFinance) {
+
+        String financeDate = ""; // 报告期
+
+        int year = Integer.parseInt(date.substring(0, 4));
+        int day = Integer.parseInt(date.substring(4));
+
+        double jingzichan = 0d;
+        if (day < 331) {
+            financeDate = (year - 1) + "-12-31";
+        } else if (day < 630) {
+            financeDate = year + "-09-30";
+        } else if (day < 930) {
+            financeDate = year + "-06-30";
+        } else {
+            financeDate = year + "-03-31";
+        }
+
+        jingzichan = balanceFinance.getData().get("归属于母公司股东权益合计").get(financeDate);
+
+        return jingzichan;
     }
 
     /**

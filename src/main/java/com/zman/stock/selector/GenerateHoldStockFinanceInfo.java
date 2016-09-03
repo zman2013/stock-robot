@@ -62,7 +62,7 @@ public class GenerateHoldStockFinanceInfo {
 
             try {
                 /**
-                 * 当季的财务报告可能未发布，因此对第一个信息不进行检查
+                 * 不对持有的股票进行增幅校验
                  */
                 for (int i = 0; i < stock.reportDateList.size(); i++) {
                     SelectStockByQuarterFinance.checkRaise(finance,
