@@ -72,12 +72,20 @@ public class StockInfoController {
         // 营收和净利润
         mainFinanceDataList.addAll(findProfitData(financeItemArray,
                 financeDateArray, basicFinance));
+        // 净资产收益率
+        mainFinanceDataList.add(findJingzichanShouyilv(cashDateArray,balanceFinanceList.get(0),profitFinanceList.get(0)));
+        // 毛利率
+        mainFinanceDataList.add(findProfitRatioData(cashDateArray,profitFinanceList.get(0)));
+        // 净利率
+        mainFinanceDataList.add(findNetProfitRatioData(cashDateArray,profitFinanceList.get(0)));
+        // 负债率
+        mainFinanceDataList.add(findFuzhaiLv(cashDateArray,balanceFinanceList.get(0)));
+        // 应收、预收、存货
+        mainFinanceDataList.addAll(findCashFlowData(new String[]{"应收账款","预收款项","存货"},
+                cashDateArray, balanceFinanceList.get(0)));
         // 现金流
         mainFinanceDataList.addAll(findCashFlowData(cashItemArray,
                 cashDateArray, finance));
-        // 净资产收益率
-        mainFinanceDataList.add(findJingzichanShouyilv(cashDateArray,balanceFinanceList.get(0),profitFinanceList.get(0)));
-        //
 
         // 获得股票的前复权月级价格历史数据
         logger.info("start downloading price history");
@@ -104,6 +112,73 @@ public class StockInfoController {
     }
 
     /**
+     * 资产负债率
+     * @param cashDateArray
+     * @param balanceFinance
+     * @return
+     */
+    private MainFinanceData findFuzhaiLv(List<String> cashDateArray, StockFinanceBO balanceFinance) {
+        MainFinanceData financeData = new MainFinanceData();
+        financeData.item = "资产负债率";
+        for (String date : cashDateArray) { // 报告期
+            if (balanceFinance.getData().get("资产总计").containsKey(date)
+                    && balanceFinance.getData().get("负债合计").containsKey(date)) {
+                float zongzichan = balanceFinance.getData().get("资产总计").get(date);
+                float fuzhai = balanceFinance.getData().get("负债合计").get(date);
+                financeData.value.add(String.format("%.2f%%\t",fuzhai/zongzichan*100));
+            } else {
+                financeData.value.add("");
+            }
+        }
+        return financeData;
+    }
+
+    /**
+     * 净利润率
+     * @param cashDateArray
+     * @param profitFinance
+     * @return
+     */
+    private MainFinanceData findNetProfitRatioData(List<String> cashDateArray, StockFinanceBO profitFinance) {
+        MainFinanceData financeData = new MainFinanceData();
+        financeData.item = "净利润率";
+        for (String date : cashDateArray) { // 报告期
+            if (profitFinance.getData().get("一、营业总收入").containsKey(date)
+                    && profitFinance.getData().get("四、净利润").containsKey(date)) {
+                float income = profitFinance.getData().get("一、营业总收入").get(date);
+                float netprofit = profitFinance.getData().get("四、净利润").get(date);
+                financeData.value.add(String.format("%.2f%%\t",netprofit/income*100));
+            } else {
+                financeData.value.add("");
+            }
+        }
+        return financeData;
+    }
+
+
+    /**
+     * 毛利润率
+     * @param cashDateArray
+     * @param profitFinance
+     * @return
+     */
+    private MainFinanceData findProfitRatioData(List<String> cashDateArray, StockFinanceBO profitFinance) {
+        MainFinanceData financeData = new MainFinanceData();
+        financeData.item = "毛利润率";
+        for (String date : cashDateArray) { // 报告期
+            if (profitFinance.getData().get("一、营业总收入").containsKey(date)
+                    && profitFinance.getData().get("三、营业利润").containsKey(date)) {
+                float income = profitFinance.getData().get("一、营业总收入").get(date);
+                float profit = profitFinance.getData().get("三、营业利润").get(date);
+                financeData.value.add(String.format("%.2f%%\t",profit/income*100));
+            } else {
+                financeData.value.add("");
+            }
+        }
+        return financeData;
+    }
+
+    /**
      * 净资产收益率
      * @param cashDateArray
      * @return
@@ -113,10 +188,11 @@ public class StockInfoController {
         MainFinanceData financeData = new MainFinanceData();
         financeData.item = "净资产收益率";
         for (String date : cashDateArray) { // 报告期
-            if (balanceFinance.getData().get("归属于母公司股东权益合计").containsKey(date)) {
+            if (balanceFinance.getData().get("归属于母公司股东权益合计").containsKey(date)
+                    && profitFinance.getData().get("归属于母公司所有者的净利润").containsKey(date)) {
                 float quanyi = balanceFinance.getData().get("归属于母公司股东权益合计").get(date);
                 float profit = profitFinance.getData().get("归属于母公司所有者的净利润").get(date);
-                financeData.value.add(String.format("%.2f\t",profit/quanyi*100));
+                financeData.value.add(String.format("%.2f%%\t",profit/quanyi*100));
             } else {
                 financeData.value.add("");
             }
