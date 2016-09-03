@@ -75,6 +75,9 @@ public class StockInfoController {
         // 现金流
         mainFinanceDataList.addAll(findCashFlowData(cashItemArray,
                 cashDateArray, finance));
+        // 净资产收益率
+        mainFinanceDataList.add(findJingzichanShouyilv(cashDateArray,balanceFinanceList.get(0),profitFinanceList.get(0)));
+        //
 
         // 获得股票的前复权月级价格历史数据
         logger.info("start downloading price history");
@@ -98,6 +101,27 @@ public class StockInfoController {
         model.addAttribute("pbHistory", pbHistory);
 
         return "stock/main-finance";
+    }
+
+    /**
+     * 净资产收益率
+     * @param cashDateArray
+     * @return
+     */
+    private MainFinanceData findJingzichanShouyilv(List<String> cashDateArray, StockFinanceBO balanceFinance,
+                                                                         StockFinanceBO profitFinance) {
+        MainFinanceData financeData = new MainFinanceData();
+        financeData.item = "净资产收益率";
+        for (String date : cashDateArray) { // 报告期
+            if (balanceFinance.getData().get("归属于母公司股东权益合计").containsKey(date)) {
+                float quanyi = balanceFinance.getData().get("归属于母公司股东权益合计").get(date);
+                float profit = profitFinance.getData().get("归属于母公司所有者的净利润").get(date);
+                financeData.value.add(String.format("%.2f\t",profit/quanyi*100));
+            } else {
+                financeData.value.add("");
+            }
+        }
+        return financeData;
     }
 
     private PEHistory computePBHistory(List<StockPrice> stockPriceList, long count, StockFinanceBO balanceFinance, int peStartDate) {
