@@ -73,16 +73,26 @@ public class StockInfoController {
         mainFinanceDataList.addAll(findProfitData(financeItemArray,
                 financeDateArray, basicFinance));
         // 净资产收益率
-        mainFinanceDataList.add(findJingzichanShouyilv(cashDateArray,balanceFinanceList.get(0),profitFinanceList.get(0)));
+        try {
+            mainFinanceDataList.add(findJingzichanShouyilv(cashDateArray, balanceFinanceList.get(0), profitFinanceList.get(0)));
+        }catch(Exception e){}
         // 毛利率
-        mainFinanceDataList.add(findProfitRatioData(cashDateArray,profitFinanceList.get(0)));
+        try {
+            mainFinanceDataList.add(findProfitRatioData(cashDateArray, profitFinanceList.get(0)));
+        }catch(Exception e){}
         // 净利率
-        mainFinanceDataList.add(findNetProfitRatioData(cashDateArray,profitFinanceList.get(0)));
+        try {
+            mainFinanceDataList.add(findNetProfitRatioData(cashDateArray, profitFinanceList.get(0)));
+        }catch(Exception e){}
         // 负债率
-        mainFinanceDataList.add(findFuzhaiLv(cashDateArray,balanceFinanceList.get(0)));
+        try {
+            mainFinanceDataList.add(findFuzhaiLv(cashDateArray, balanceFinanceList.get(0)));
+        }catch(Exception e){}
         // 应收、预收、存货
-        mainFinanceDataList.addAll(findCashFlowData(new String[]{"应收账款","预收款项","存货"},
-                cashDateArray, balanceFinanceList.get(0)));
+        try {
+            mainFinanceDataList.addAll(findCashFlowData(new String[]{"应收账款", "预收款项", "存货"},
+                    cashDateArray, balanceFinanceList.get(0)));
+        }catch(Exception e){}
         // 现金流
         mainFinanceDataList.addAll(findCashFlowData(cashItemArray,
                 cashDateArray, finance));
