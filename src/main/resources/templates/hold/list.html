@@ -23,6 +23,11 @@
 			<td>代码</td>
 			<td>买入时间</td>
 			<td>收益</td>
+			<td>趋势操作</td><!--根据趋势，判断买入、卖出时机-->
+			<td>当前价格</td>
+			<td>买入价格</td>
+			<td>卖出价格</td>
+			<td>估值操作</td><!--根据估值，判断买入、卖出时机-->
 			<td>操作</td>
 		</tr>
 		<tr th:each="stockData : ${stockMap.values()}">
@@ -34,6 +39,11 @@
 			<td style="color:red" th:if="${stockData.action=='卖出'}" th:text="${stockData.action}"></td>
 			<td style="color:green" th:if="${stockData.action=='买入'}" th:text="${stockData.action}"></td>
 			<td th:if="${stockData.action=='持有'}" th:text="${stockData.action}"></td>
+			<td th:text="${stockData.price}"></td>
+			<td th:text="${stockData.buyPrice}"></td>
+			<td th:text="${stockData.sellPrice}"></td>
+			<td th:style="'color:' + ( (${stockData.peAction}=='卖出')?'red':((${stockData.peAction}=='买入')?'green':'black'))" th:text="${stockData.peAction}"></td>
+			<td><a th:href="@{/hold/set-price(code=${stockData.code},buyPrice=,sellPrice=)}">设置</a></td>
 		</tr>
 	</table>
 </body>

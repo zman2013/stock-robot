@@ -1,9 +1,14 @@
 package com.zman.stock;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
+import com.zman.stock.data.domain.HoldStockInfo;
+import com.zman.stock.data.domain.StockBasicInfo;
 import com.zman.stock.downloader.*;
 import com.zman.stock.selector.GenerateHoldStockFinanceInfo;
+import com.zman.stock.service.StockDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +64,9 @@ public class Scheduler {
     @Autowired
     private HoldStockMonitor holdStockMonitor;
 
+    @Autowired
+    private StockDataService stockDataService;
+
     /**
      * 每天早上六点： 下载股票基本信息，股数，主营业务
      */
@@ -85,6 +93,37 @@ public class Scheduler {
         mainBusinessDownloader.download();
         usedTime = (System.currentTimeMillis() - starttime) / 1000;
         logger.info("下载公司主营业务结束，用时{}s", usedTime);
+
+        starttime = System.currentTimeMillis();
+        logger.info("设置持有股票的当前价格...");
+        try {
+            updateHoldStockPrice();
+            usedTime = (System.currentTimeMillis() - starttime) / 1000;
+            logger.info("设置持有股票的当前价格，用时{}s", usedTime);
+        }catch(Exception e){
+            logger.error("设置持有股票的当前价格失败", e);
+        }
+    }
+
+    private void updateHoldStockPrice() throws Exception {
+
+        Map<String,StockBasicInfo> allStockBasicInfoMap = stockDataService.getAllStockBasicInfo();
+        Map<String, HoldStockInfo> holdStockMap = stockDataService.loadHoldStockInfo();
+        for( HoldStockInfo stock : holdStockMap.values()){
+            try {
+                stock.price = allStockBasicInfoMap.get(stock.code).price;
+                if( Float.parseFloat(stock.price) > Float.parseFloat(stock.sellPrice) ){
+                    stock.peAction = "卖出";
+                }else if( Float.parseFloat(stock.price) < Float.parseFloat(stock.sellPrice) ){
+                    stock.peAction = "买入";
+                }else{
+                    stock.peAction = "持有";
+                }
+            }catch(Exception e){
+                logger.error("",e);
+            }
+        }
+        stockDataService.writeHoldStockInfo(holdStockMap);
     }
 
     /**
