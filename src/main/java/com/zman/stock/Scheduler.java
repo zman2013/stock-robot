@@ -114,7 +114,7 @@ public class Scheduler {
                 stock.price = allStockBasicInfoMap.get(stock.code).price;
                 if( Float.parseFloat(stock.price) > Float.parseFloat(stock.sellPrice) ){
                     stock.peAction = "卖出";
-                }else if( Float.parseFloat(stock.price) < Float.parseFloat(stock.sellPrice) ){
+                }else if( Float.parseFloat(stock.price) < Float.parseFloat(stock.buyPrice) ){
                     stock.peAction = "买入";
                 }else{
                     stock.peAction = "持有";
