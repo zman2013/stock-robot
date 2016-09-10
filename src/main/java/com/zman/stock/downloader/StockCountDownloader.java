@@ -48,11 +48,9 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
 
             try {
                 // 下载页面,并处理
-                Map<String, Object> result = process(stock.code);
-                SortedMap<String, Object> tmp = new TreeMap<>(result);
+                Map<String, String> result = process(String.format(baseUrl, stock.code));
                 // 保存信息
-                long count = (long) (Double.parseDouble((String) result.get(tmp
-                        .lastKey())) * 10000);
+                long count = (long) (Double.parseDouble((String) result.get(result.get("count"))) * 10000);
                 stock.count = count;
             } catch (Exception e) {
                 logger.error("下载总股数失败，stock:" + stock.code, e);
@@ -105,25 +103,18 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
     }
 
     /**
-     * 
-     * @param baseUrl
-     * @param code
-     * @param name
-     * @return date -> count, 例: 2015-12-31 -> 10000
+     * @param url
+     * @return "count" -> count, 例: "count" -> 10000
      * @throws DownloadFailException
      */
     @Override
-    protected Map<String, Object> process(String code)
+    protected Map<String, String> process(String url)
             throws DownloadFailException {
-        Document doc = DownloadUtil.downloadDoc(String.format(baseUrl, code));
-        Elements elements = doc.select("#astockchange_table tbody tr");
-        Map<String, Object> map = new HashMap<>();
-        elements.stream().forEach(tr -> {
-            Elements eles = tr.select("td");
-            String date = eles.get(0).text(); // 2015-12-31
-                String count = eles.get(2).text();
-                map.put(date, count);
-            });
+        Document doc = DownloadUtil.downloadDoc(url);
+        Elements elements = doc.select("#stockcapit.gqtz tbody tr td:eq(1)");
+        String count = elements.get(0).text();
+        Map<String,String> map = new HashMap<>();
+        map.put("count",count);
         return map;
     }
 }
