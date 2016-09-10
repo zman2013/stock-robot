@@ -32,7 +32,7 @@
 		</tr>
 		<tr th:each="stockData : ${stockMap.values()}">
 			<td><a th:text="${stockData.name}"
-				th:href="@{/stock/main-finance(code=${stockData.code})}"></a></td>
+				th:href="@{/stock/main-finance(code=${stockData.code},pe-start-date=20130101)}"></a></td>
 			<td th:text="${stockData.code}"></td>
 			<td th:text="${stockData.date}"></td>
 			<td th:text="${stockData.profit + '%'}"></td>

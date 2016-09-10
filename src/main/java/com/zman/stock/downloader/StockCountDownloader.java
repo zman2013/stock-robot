@@ -50,7 +50,7 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
                 // 下载页面,并处理
                 Map<String, String> result = process(String.format(baseUrl, stock.code));
                 // 保存信息
-                long count = (long) (Double.parseDouble((String) result.get(result.get("count"))) * 10000);
+                long count = (long) (Double.parseDouble((String) result.get(("count"))) * 10000);
                 stock.count = count;
             } catch (Exception e) {
                 logger.error("下载总股数失败，stock:" + stock.code, e);
@@ -111,8 +111,10 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
     protected Map<String, String> process(String url)
             throws DownloadFailException {
         Document doc = DownloadUtil.downloadDoc(url);
+        //总股本结构 部分，提取最新季度 总股本数
         Elements elements = doc.select("#stockcapit.gqtz tbody tr td:eq(1)");
         String count = elements.get(0).text();
+
         Map<String,String> map = new HashMap<>();
         map.put("count",count);
         return map;
