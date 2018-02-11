@@ -2,11 +2,7 @@ package com.zman.stock.downloader;
 
 import com.zman.stock.data.domain.StockFinanceBO;
 import com.zman.stock.exception.DownloadFailException;
-import com.zman.stock.util.DownloadUtil;
 import com.zman.stock.util.FinanceTools;
-import com.zman.stock.util.StockDataTools;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 下载股票的基本财务信息
@@ -44,6 +44,11 @@ public class StockBasicFinanceFromSinaDownloader extends AbstractLoopAllStockDow
     @Override
     protected Map<String, ?> process(String code) throws DownloadFailException,
             IOException {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            logger.error("Never REACH");
+        }
         Map<String, Map<String, String>> finance = new HashMap<>();
         try {
             List<StockFinanceBO> stockFinanceBOList = detailedFinanceDownloader.findByStockList(Arrays.asList(code), "ProfitStatement");
