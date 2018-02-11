@@ -12,6 +12,7 @@ import com.zman.stock.Application;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = Application.class)
 @TestPropertySource("/application.properties")
+@Deprecated
 public class StockBasicFinanceDownloaderTest {
 
     @Autowired

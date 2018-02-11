@@ -1,8 +1,15 @@
 package com.zman.stock.downloader;
 
+import com.zman.stock.Application;
 import com.zman.stock.data.domain.StockBasicInfo;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -10,7 +17,13 @@ import java.util.Map;
 /**
  * Created by zman on 2016/8/28.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = Application.class)
+@TestPropertySource("/application.properties")
 public class StockBasicInfoSinaDownloaderTest {
+
+    @Autowired
+    private StockBasicInfoSinaDownloader downloader;
 
     @Test
     public void findPageCount() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
@@ -33,5 +46,11 @@ public class StockBasicInfoSinaDownloaderTest {
         }
 
     }
+
+    @Test
+    public void download() throws IOException {
+        downloader.download();
+    }
+
 
 }

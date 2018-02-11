@@ -1,23 +1,22 @@
 package com.zman.stock.service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zman.stock.data.domain.FinanceForecast;
+import com.zman.stock.data.domain.HoldStockInfo;
+import com.zman.stock.data.domain.StockBasicInfo;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zman.stock.data.domain.FinanceForecast;
-import com.zman.stock.data.domain.HoldStockInfo;
-import com.zman.stock.data.domain.StockBasicInfo;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class StockDataService {
@@ -52,11 +51,16 @@ public class StockDataService {
         Map<String, StockBasicInfo> allStockBasicInfoMap = null;
 
         // 读取所有股票基本信息
+        File file = new File(stockBasicInfoFile);
+        if( !file.exists() ){
+            logger.info("当前股票基本信息文件不存在，应该第一次下载股票基本数据");
+            return Collections.emptyMap();
+        }
         try {
             JavaType javaType = mapper.getTypeFactory().constructMapType(
                     Map.class, String.class, StockBasicInfo.class);
             allStockBasicInfoMap = mapper.readValue(
-                    new File(stockBasicInfoFile), javaType);
+                    file, javaType);
         } catch (Exception e) {
             logger.error("从文件中读取所有股票信息出错,file:{}", stockBasicInfoFile);
             logger.error("", e);

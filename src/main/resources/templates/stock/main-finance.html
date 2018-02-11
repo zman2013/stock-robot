@@ -9,6 +9,15 @@
 
     <table border="1" style="text-align:right">
         <tr>
+            <td>价格</td>
+            <td th:text="${basicInfo.price}"></td>
+            <td>股数</td>
+            <td th:text="${#numbers.formatDecimal(basicInfo.count/100000000.0,1,2)} + '亿'"></td>
+        </tr>
+    </table>
+
+    <table border="1" style="text-align:right">
+        <tr>
             <td rowspan="1">名称(亿)</td>
             <td th:each="reportDate: ${reportDateList}" th:text="${reportDate}"></td>
         </tr>

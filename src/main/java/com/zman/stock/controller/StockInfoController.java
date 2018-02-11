@@ -1,19 +1,5 @@
 package com.zman.stock.controller;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.zman.stock.data.domain.MainFinanceData;
 import com.zman.stock.data.domain.PEHistory;
 import com.zman.stock.data.domain.StockBasicInfo;
@@ -23,6 +9,19 @@ import com.zman.stock.downloader.StockDetailedFinanceDownloader;
 import com.zman.stock.downloader.StockFuQuanQianMonthPriceHistoryDownloader;
 import com.zman.stock.service.StockDataService;
 import com.zman.stock.util.StockDataTools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/stock")
@@ -117,6 +116,7 @@ public class StockInfoController {
         model.addAttribute("name", finance.getName());
         model.addAttribute("peHistory", peHistory);
         model.addAttribute("pbHistory", pbHistory);
+        model.addAttribute("basicInfo", stockBasicInfo);
 
         return "stock/main-finance";
     }

@@ -1,13 +1,19 @@
 package com.zman.stock;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
 import com.zman.stock.data.domain.HoldStockInfo;
 import com.zman.stock.data.domain.StockBasicInfo;
-import com.zman.stock.downloader.*;
+import com.zman.stock.downloader.StockBasicFinanceFromSinaDownloader;
+import com.zman.stock.downloader.StockBasicInfoSinaDownloader;
+import com.zman.stock.downloader.StockCountDownloader;
+import com.zman.stock.downloader.StockFinanceForecastDownloader;
+import com.zman.stock.downloader.StockHoufuquanDailyPriceHistoryDownloader;
+import com.zman.stock.downloader.StockMainBusinessDownloader;
+import com.zman.stock.monitor.HoldStockMonitor;
+import com.zman.stock.monitor.StockSelectMonitor;
 import com.zman.stock.selector.GenerateHoldStockFinanceInfo;
+import com.zman.stock.selector.SelectStockByAnnualFinance;
+import com.zman.stock.selector.SelectStockByBothInfo;
+import com.zman.stock.selector.SelectStockByQuarterFinance;
 import com.zman.stock.service.StockDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.zman.stock.monitor.HoldStockMonitor;
-import com.zman.stock.monitor.StockSelectMonitor;
-import com.zman.stock.selector.SelectStockByAnnualFinance;
-import com.zman.stock.selector.SelectStockByBothInfo;
-import com.zman.stock.selector.SelectStockByQuarterFinance;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * 一切的开始
@@ -82,16 +85,17 @@ public class Scheduler {
             logger.error("下载股票基本信息失败", e);
         }
 
-        starttime = System.currentTimeMillis();
-        logger.info("开始下载股票总股数...");
-        countDownloader.download();
-        long usedTime = (System.currentTimeMillis() - starttime) / 1000;
-        logger.info("下载股票总股数结束，用时{}s", usedTime);
+//        已经包含在获取公司主营业务信息的逻辑中
+//        starttime = System.currentTimeMillis();
+//        logger.info("开始下载股票总股数...");
+//        countDownloader.download();
+//        long usedTime = (System.currentTimeMillis() - starttime) / 1000;
+//        logger.info("下载股票总股数结束，用时{}s", usedTime);
 
         starttime = System.currentTimeMillis();
         logger.info("开始下载公司主营业务...");
         mainBusinessDownloader.download();
-        usedTime = (System.currentTimeMillis() - starttime) / 1000;
+        long usedTime = (System.currentTimeMillis() - starttime) / 1000;
         logger.info("下载公司主营业务结束，用时{}s", usedTime);
 
         starttime = System.currentTimeMillis();

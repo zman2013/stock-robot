@@ -1,23 +1,18 @@
 package com.zman.stock.downloader;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
 import com.zman.stock.data.domain.HoldStockInfo;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.zman.stock.data.domain.StockBasicInfo;
+import com.zman.stock.exception.DownloadFailException;
+import org.jsoup.HttpStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.zman.stock.data.domain.StockBasicInfo;
-import com.zman.stock.exception.DownloadFailException;
-import com.zman.stock.util.DownloadUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * 股票股数下载，股数单位是：万股
@@ -25,6 +20,7 @@ import com.zman.stock.util.DownloadUtil;
  * @author zman
  *
  */
+@Deprecated
 @Service
 public class StockCountDownloader extends AbstractLoopAllStockDownloader {
 
@@ -48,12 +44,22 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
 
             try {
                 // 下载页面,并处理
-                Map<String, String> result = process(String.format(baseUrl, stock.code));
+                Map<String, String> result = process(String.format(baseUrl, "sh"+stock.code));
                 // 保存信息
-                long count = (long) (Double.parseDouble((String) result.get(("count"))) * 10000);
-                stock.count = count;
+                String countString = result.get("count");
+                double count = Double.parseDouble(countString) * 10000;
+                stock.count = (long) count;
             } catch (Exception e) {
-                logger.error("下载总股数失败，stock:" + stock.code, e);
+                try {
+                    // 下载页面,并处理
+                    Map<String, String> result = process(String.format(baseUrl, "sz" + stock.code));
+                    // 保存信息
+                    String countString = result.get("count");
+                    double count = Double.parseDouble(countString) * 10000;
+                    stock.count = (long) count;
+                }catch (Exception e2){
+                    logger.error("获取股票总股数失败, "+stock.code + " " + baseUrl );
+                }
             }
 
             if (processedCount++ % 100 == 0) {
@@ -102,21 +108,30 @@ public class StockCountDownloader extends AbstractLoopAllStockDownloader {
         return null;
     }
 
+    private static Pattern pattern = Pattern.compile("var totalcapital = (\\d+\\.?\\d*);");
+            //.compile("_(\\d{4})_(\\d{2})_(\\d{2}):\"([\\-\\.\\d]+)\",.*?");
+
     /**
      * @param url
      * @return "count" -> count, 例: "count" -> 10000
      * @throws DownloadFailException
      */
     @Override
-    protected Map<String, String> process(String url)
-            throws DownloadFailException {
-        Document doc = DownloadUtil.downloadDoc(url);
-        //总股本结构 部分，提取最新季度 总股本数
-        Elements elements = doc.select("#stockcapit.gqtz tbody tr td:eq(1)");
-        String count = elements.get(0).text();
+    protected Map<String, String> process(String url) throws DownloadFailException, HttpStatusException {
+//        String content = DownloadUtil.downloadContent(url);
+//        Matcher matcher = pattern.matcher(content);
+//        if(matcher.find()){
+//            String count = matcher.group(1);
+//            Map<String,String> map = new HashMap<>();
+//            map.put("count",count);
+//            return map;
+//        }
 
-        Map<String,String> map = new HashMap<>();
-        map.put("count",count);
-        return map;
+        throw new RuntimeException("在页面中未找到股数信息");
+
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
     }
 }

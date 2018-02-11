@@ -5,7 +5,7 @@
 
 	<groupId>com.zman.stock</groupId>
 	<artifactId>stock-robot</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -21,7 +21,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
+			<artifactId>spring-boot-starter</artifactId>
 			<exclusions>
     <exclusion>
       <groupId>org.springframework.boot</groupId>
