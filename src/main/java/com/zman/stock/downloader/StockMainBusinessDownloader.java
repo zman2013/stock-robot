@@ -50,7 +50,7 @@ public class StockMainBusinessDownloader extends AbstractLoopAllStockDownloader 
                 String mainBusinessInfo = (String) result.get("mainBusiness");
                 stock.mainBusiness = mainBusinessInfo;
 
-                long count = (long) (Double.parseDouble(result.get("count")) * 1000);
+                long count = (long) (Double.parseDouble(result.get("count")) * 10000);
                 stock.count = count;
 
             } catch (Exception e) {
