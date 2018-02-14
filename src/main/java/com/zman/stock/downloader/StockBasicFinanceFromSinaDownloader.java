@@ -56,7 +56,7 @@ public class StockBasicFinanceFromSinaDownloader extends AbstractLoopAllStockDow
                 Map<String,Map<String,Float>> data = f.getData();
 
                 List<String> revenueItemList = Arrays.asList("一、营业总收入","一、营业收入");
-                List<String> profitItemList = Arrays.asList("四、净利润","四、利润总额");
+                List<String> profitItemList = Arrays.asList("四、净利润","五、净利润","四、利润总额");
                 Map<String,Float> revenueMap = FinanceTools.getFinance(data, revenueItemList);
                 Map<String,Float> profitMap = FinanceTools.getFinance(data, profitItemList);
                 Set<String> dateSet = revenueMap.keySet();
